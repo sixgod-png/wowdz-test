@@ -1,0 +1,2240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时光服敏锐贼木桩肌肉记忆练习器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffd700;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        /* 战斗设置区 */
+        .battle-settings {
+            background-color: #2a2a2a;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .battle-settings select {
+            padding: 10px;
+            background-color: #3a3a3a;
+            color: #e0e0e0;
+            border: 1px solid #555;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .start-btn {
+            padding: 10px 30px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .start-btn:hover {
+            background-color: #45a049;
+        }
+
+        .start-btn:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+
+        /* 倒计时面板 */
+        .countdown {
+            background-color: #2a2a2a;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            font-size: 24px;
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        /* 主战斗区 */
+        .main-battle-area {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* 左侧战斗区域 */
+        .left-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* 右侧统计区 */
+        .right-area {
+            display: none;
+        }
+
+        /* 区域通用样式 */
+        .section {
+            background-color: #2a2a2a;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .section-title {
+            color: #ffd700;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        /* Boss血条 */
+        .boss-health {
+            position: relative;
+        }
+
+        .boss-health-bar {
+            width: 100%;
+            height: 30px;
+            background-color: #3a3a3a;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .boss-health-fill {
+            height: 100%;
+            background-color: #ff4444;
+            width: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .boss-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        /* 基础统计 */
+        .basic-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            padding: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        /* 技能伤害统计 */
+        .skill-damage-stats {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 10px;
+        }
+
+        .skill-damage-item {
+            text-align: center;
+            padding: 10px;
+            background-color: #3a3a3a;
+            border-radius: 4px;
+        }
+
+        .skill-damage-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .skill-damage-name {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        /* 持续效果 */
+        .buffs-debuffs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .buff, .debuff {
+            padding: 5px;
+            border-radius: 4px;
+            font-size: 12px;
+            position: relative;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: 80%;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.8;
+        }
+
+        .buff {
+            background-color: rgba(0, 128, 0, 0.3);
+            border: 1px solid #4caf50;
+        }
+
+        .debuff {
+            background-color: rgba(128, 0, 0, 0.3);
+            border: 1px solid #ff4444;
+        }
+
+        .buff-duration, .debuff-duration {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #333;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        /* 能量和连击点 */
+        .energy-combo-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .energy-bar {
+            height: 20px;
+            background-color: #3a3a3a;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .energy-fill {
+            height: 100%;
+            background-color: #8a2be2;
+            width: 100%;
+            transition: width 0.1s ease;
+        }
+
+        .energy-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 12px;
+            line-height: 20px;
+            font-weight: bold;
+        }
+
+        .combo-points {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .combo-point {
+            width: 20px;
+            height: 20px;
+            background-color: #3a3a3a;
+            border: 2px solid #555;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .combo-point.active {
+            background-color: #ffd700;
+            border-color: #ffd700;
+        }
+
+        /* 技能栏 */
+        .skill-bar {
+            display: grid;
+            grid-template-columns: repeat(13, 1fr);
+            gap: 0;
+        }
+
+        .skill-button {
+            aspect-ratio: 1;
+            width: 50px;
+            height: 50px;
+            background-color: #3a3a3a;
+            border: 1px solid #555;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+            padding: 3px;
+        }
+
+        .skill-button:hover {
+            border-color: #ffd700;
+            background-color: #4a4a4a;
+        }
+
+        .skill-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .skill-icon {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 5px;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .skill-key {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 2px;
+            color: #ffd700;
+        }
+
+        .skill-name {
+            font-size: 10px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .cooldown-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+
+        /* 战斗日志 */
+        .combat-log {
+            height: 200px;
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 10px;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            color: #ccc;
+        }
+
+        .log-entry.damage {
+            color: #ff6b6b;
+        }
+
+        .log-entry.heal {
+            color: #4caf50;
+        }
+
+        .log-entry.buff {
+            color: #4169e1;
+        }
+
+        .log-entry.debuff {
+            color: #ff9800;
+        }
+
+        /* 武器属性展示 */
+        .weapon-info {
+            padding: 15px;
+        }
+
+        .weapon-info h3 {
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .weapon-stats {
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        /* 伤害统计详情 */
+        .damage-stats {
+            padding: 15px;
+            overflow-x: auto;
+        }
+
+        .damage-stats h3 {
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .stats-table {
+            width: 100%;
+            min-width: 600px;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .stats-table th, .stats-table td {
+            padding: 8px 12px;
+            text-align: center;
+            border: 1px solid #444;
+            white-space: nowrap;
+        }
+
+        .stats-table th {
+            color: #ffd700;
+            font-weight: bold;
+            background-color: #3a3a3a;
+        }
+
+        .stats-table tr:nth-child(even) {
+            background-color: #2d2d2d;
+        }
+
+        .stats-table tr:hover {
+            background-color: #3a3a3a;
+        }
+
+        .stats-table tr:last-child {
+            background-color: #3a3a3a;
+            font-weight: bold;
+        }
+
+        /* 战斗结束弹窗 */
+        .battle-end-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #2a2a2a;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-content h2 {
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+
+        .final-stats {
+            margin-bottom: 30px;
+        }
+
+        .final-stats div {
+            margin-bottom: 10px;
+        }
+
+        .final-stats .stat-value {
+            font-size: 24px;
+        }
+
+        .restart-btn {
+            padding: 10px 30px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .restart-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .main-battle-area {
+                flex-direction: column;
+            }
+
+            .right-area {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .skill-bar {
+                grid-template-columns: repeat(6, 1fr);
+            }
+
+            .basic-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .skill-damage-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>时光服敏锐贼木桩肌肉记忆练习器</h1>
+        
+        <!-- 作者信息 -->
+        <div style="text-align: center; margin-bottom: 20px; padding: 10px; background-color: #2a2a2a; border-radius: 8px;">
+            <p style="color: #ffd700; font-weight: bold;">作者：六月耶</p>
+            <p style="color: #aaa; font-size: 12px;">服务器：时光3服 | Bilibili直播间：六月耶耶耶</p>
+        </div>
+
+        <!-- 战斗设置区 -->
+        <div class="battle-settings">
+            <label for="player-id">玩家ID：</label>
+            <input type="text" id="player-id" placeholder="输入玩家名称" style="padding: 10px; background-color: #3a3a3a; color: #e0e0e0; border: 1px solid #555; border-radius: 4px; font-size: 16px">
+            <label for="battle-duration">战斗时长：</label>
+            <select id="battle-duration">
+                <option value="60">1分钟</option>
+                <option value="120">2分钟</option>
+                <option value="240">4分钟</option>
+            </select>
+            <button class="start-btn" id="start-btn">开始战斗</button>
+        </div>
+
+        <!-- 倒计时面板 -->
+        <div class="countdown" style="display: flex; justify-content: space-between;">
+            <div id="countdown">准备开始...</div>
+            <div id="combat-timer">战斗时间：0s</div>
+        </div>
+
+        <!-- 主战斗区 -->
+        <div class="main-battle-area">
+            <!-- 左侧战斗区域 -->
+            <div class="left-area">
+                <!-- Boss血条 -->
+                <div class="section">
+                    <div class="boss-health-bar">
+                        <div class="boss-health-fill" id="boss-health-fill"></div>
+                    </div>
+                    <div class="boss-info">
+                        <span>Boss: 测试目标</span>
+                        <span id="boss-health-text">1,000,000 / 1,000,000</span>
+                    </div>
+                </div>
+
+                <!-- 基础统计 -->
+                <div class="section basic-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-damage">0</div>
+                        <div class="stat-label">总伤害</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="dps">0</div>
+                        <div class="stat-label">DPS</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="combat-time">0s</div>
+                        <div class="stat-label">战斗时长</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="combo-points-display">0</div>
+                        <div class="stat-label">连击点</div>
+                    </div>
+                </div>
+
+                <!-- 技能伤害统计 -->
+                <div class="section">
+                    <div class="section-title">技能伤害统计</div>
+                    <div class="skill-damage-stats">
+                        <div class="skill-damage-item">
+                            <div class="skill-damage-value" id="stat-auto-attack">0</div>
+                            <div class="skill-damage-name">平砍</div>
+                        </div>
+                        <div class="skill-damage-item">
+                            <div class="skill-damage-value" id="stat-instant-poison">0</div>
+                            <div class="skill-damage-name">速效</div>
+                        </div>
+                        <div class="skill-damage-item">
+                            <div class="skill-damage-value" id="stat-deadly-poison">0</div>
+                            <div class="skill-damage-name">致命</div>
+                        </div>
+                        <div class="skill-damage-item">
+                            <div class="skill-damage-value" id="stat-death-mark">0</div>
+                            <div class="skill-damage-name">印记</div>
+                        </div>
+                        <div class="skill-damage-item">
+                            <div class="skill-damage-value" id="stat-rupture">0</div>
+                            <div class="skill-damage-name">割裂</div>
+                        </div>
+                        <div class="skill-damage-item">
+                            <div class="skill-damage-value" id="stat-eviscerate">0</div>
+                            <div class="skill-damage-name">刺骨</div>
+                        </div>
+                        <div class="skill-damage-item">
+                            <div class="skill-damage-value" id="stat-hemorrhage">0</div>
+                            <div class="skill-damage-name">出血</div>
+                        </div>
+                        <div class="skill-damage-item">
+                            <div class="skill-damage-value" id="stat-garrote">0</div>
+                            <div class="skill-damage-name">锁喉</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 持续效果 -->
+                <div class="section">
+                    <div class="section-title">持续效果</div>
+                    <div class="buffs-debuffs" id="buffs-debuffs">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 能量和连击点 -->
+                <div class="section energy-combo-section">
+                    <div class="section-title">技能和连击点</div>
+                    <div class="energy-bar">
+                        <div class="energy-fill" id="energy-fill"></div>
+                        <div class="energy-text" id="energy-text">100 / 100</div>
+                    </div>
+                    <div class="combo-points" id="combo-points">
+                        <div class="combo-point"></div>
+                        <div class="combo-point"></div>
+                        <div class="combo-point"></div>
+                        <div class="combo-point"></div>
+                        <div class="combo-point"></div>
+                    </div>
+                </div>
+
+                <!-- 技能栏 -->
+                <div class="section">
+                    <div class="skill-bar">
+                        <div class="skill-button" data-skill="hemorrhage" id="skill-1" style="background-image: url('logo/chuxue.png'); background-size: 80%; background-position: center; background-repeat: no-repeat; background-color: #3a3a3a;">
+                            <div class="skill-key" style="font-size: 16px; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">1</div>
+                            <div class="skill-name" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-size: 10px;">出血</div>
+                        </div>
+                        <div class="skill-button" data-skill="garrote" id="skill-2" style="background-image: url('logo/suohou.png'); background-size: 80%; background-position: center; background-repeat: no-repeat; background-color: #3a3a3a;">
+                            <div class="skill-key" style="font-size: 16px; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">2</div>
+                            <div class="skill-name" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-size: 10px;">锁喉</div>
+                        </div>
+                        <div class="skill-button" data-skill="eviscerate" id="skill-3" style="background-image: url('logo/cigu.png'); background-size: 80%; background-position: center; background-repeat: no-repeat; background-color: #3a3a3a;">
+                            <div class="skill-key" style="font-size: 16px; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">3</div>
+                            <div class="skill-name" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-size: 10px;">刺骨</div>
+                        </div>
+                        <div class="skill-button" data-skill="death-mark" id="skill-4" style="background-image: url('logo/siyin.png'); background-size: 80%; background-position: center; background-repeat: no-repeat; background-color: #3a3a3a;">
+                            <div class="skill-key" style="font-size: 16px; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">4</div>
+                            <div class="skill-name" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-size: 10px;">死亡印记</div>
+                        </div>
+                        <div class="skill-button" data-skill="thistle-tea" id="skill-5" style="background-image: url('logo/juhuacha.png'); background-size: 80%; background-position: center; background-repeat: no-repeat; background-color: #3a3a3a;">
+                            <div class="skill-key" style="font-size: 16px; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">5</div>
+                            <div class="skill-name" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-size: 10px;">菊花茶</div>
+                        </div>
+                        <div class="skill-button" data-skill="shadow-dance" id="skill-q" style="background-image: url('logo/yingwu.png'); background-size: 80%; background-position: center; background-repeat: no-repeat; background-color: #3a3a3a;">
+                            <div class="skill-key" style="font-size: 16px; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">Q</div>
+                            <div class="skill-name" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-size: 10px;">暗影之舞</div>
+                        </div>
+                        <div class="skill-button" data-skill="shadowstep" id="skill-e" style="background-image: url('logo/anyinbu.png'); background-size: 80%; background-position: center; background-repeat: no-repeat; background-color: #3a3a3a;">
+                            <div class="skill-key" style="font-size: 16px; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">E</div>
+                            <div class="skill-name" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-size: 10px;">暗影步</div>
+                        </div>
+                        <div class="skill-button" data-skill="rupture" id="skill-t" style="background-image: url('logo/gelie.png'); background-size: 80%; background-position: center; background-repeat: no-repeat; background-color: #3a3a3a;">
+                            <div class="skill-key" style="font-size: 16px; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">T</div>
+                            <div class="skill-name" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-size: 10px;">割裂</div>
+                        </div>
+                        <div class="skill-button" data-skill="slice-dice" id="skill-f" style="background-image: url('logo/qiege.png'); background-size: 80%; background-position: center; background-repeat: no-repeat; background-color: #3a3a3a;">
+                            <div class="skill-key" style="font-size: 16px; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">F</div>
+                            <div class="skill-name" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-size: 10px;">切割</div>
+                        </div>
+                        <div class="skill-button" data-skill="vanish" id="skill-r" style="background-image: url('logo/xiaoshi.png'); background-size: 80%; background-position: center; background-repeat: no-repeat; background-color: #3a3a3a;">
+                            <div class="skill-key" style="font-size: 16px; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">R</div>
+                            <div class="skill-name" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-size: 10px;">消失</div>
+                        </div>
+                        <div class="skill-button" data-skill="preparation" id="skill-z" style="background-image: url('logo/sijidaifa.png'); background-size: 80%; background-position: center; background-repeat: no-repeat; background-color: #3a3a3a;">
+                            <div class="skill-key" style="font-size: 16px; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">Z</div>
+                            <div class="skill-name" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-size: 10px;">伺机待发</div>
+                        </div>
+                        <div class="skill-button" data-skill="misdirection" id="skill-x" style="background-image: url('logo/jiahuo.png'); background-size: 80%; background-position: center; background-repeat: no-repeat; background-color: #3a3a3a;">
+                            <div class="skill-key" style="font-size: 16px; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">X</div>
+                            <div class="skill-name" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-size: 10px;">嫁祸诀窍</div>
+                        </div>
+                        <div class="skill-button" data-skill="transfer-combo" id="skill-c" style="background-image: url('logo/zhuanjia.png'); background-size: 80%; background-position: center; background-repeat: no-repeat; background-color: #3a3a3a;">
+                            <div class="skill-key" style="font-size: 16px; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">C</div>
+                            <div class="skill-name" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-size: 10px;">转嫁</div>
+                            <div style="position: absolute; top: 5px; right: 5px; font-size: 12px; font-weight: bold; color: #ffd700;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 自定义按键设置 -->
+                <div class="section">
+                    <div class="section-title">自定义按键设置</div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 10px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span>出血：</span>
+                            <input type="text" id="key-hemorrhage" value="1" style="padding: 5px; background-color: #3a3a3a; color: #e0e0e0; border: 1px solid #555; border-radius: 4px; width: 80px;" data-skill="hemorrhage">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span>锁喉：</span>
+                            <input type="text" id="key-garrote" value="2" style="padding: 5px; background-color: #3a3a3a; color: #e0e0e0; border: 1px solid #555; border-radius: 4px; width: 80px;" data-skill="garrote">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span>刺骨：</span>
+                            <input type="text" id="key-eviscerate" value="3" style="padding: 5px; background-color: #3a3a3a; color: #e0e0e0; border: 1px solid #555; border-radius: 4px; width: 80px;" data-skill="eviscerate">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span>死亡印记：</span>
+                            <input type="text" id="key-death-mark" value="4" style="padding: 5px; background-color: #3a3a3a; color: #e0e0e0; border: 1px solid #555; border-radius: 4px; width: 80px;" data-skill="death-mark">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span>菊花茶：</span>
+                            <input type="text" id="key-thistle-tea" value="5" style="padding: 5px; background-color: #3a3a3a; color: #e0e0e0; border: 1px solid #555; border-radius: 4px; width: 80px;" data-skill="thistle-tea">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span>暗影之舞：</span>
+                            <input type="text" id="key-shadow-dance" value="Q" style="padding: 5px; background-color: #3a3a3a; color: #e0e0e0; border: 1px solid #555; border-radius: 4px; width: 80px;" data-skill="shadow-dance">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span>暗影步：</span>
+                            <input type="text" id="key-shadowstep" value="E" style="padding: 5px; background-color: #3a3a3a; color: #e0e0e0; border: 1px solid #555; border-radius: 4px; width: 80px;" data-skill="shadowstep">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span>割裂：</span>
+                            <input type="text" id="key-rupture" value="T" style="padding: 5px; background-color: #3a3a3a; color: #e0e0e0; border: 1px solid #555; border-radius: 4px; width: 80px;" data-skill="rupture">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span>切割：</span>
+                            <input type="text" id="key-slice-dice" value="F" style="padding: 5px; background-color: #3a3a3a; color: #e0e0e0; border: 1px solid #555; border-radius: 4px; width: 80px;" data-skill="slice-dice">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span>消失：</span>
+                            <input type="text" id="key-vanish" value="R" style="padding: 5px; background-color: #3a3a3a; color: #e0e0e0; border: 1px solid #555; border-radius: 4px; width: 80px;" data-skill="vanish">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span>伺机待发：</span>
+                            <input type="text" id="key-preparation" value="Z" style="padding: 5px; background-color: #3a3a3a; color: #e0e0e0; border: 1px solid #555; border-radius: 4px; width: 80px;" data-skill="preparation">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span>嫁祸诀窍：</span>
+                            <input type="text" id="key-misdirection" value="X" style="padding: 5px; background-color: #3a3a3a; color: #e0e0e0; border: 1px solid #555; border-radius: 4px; width: 80px;" data-skill="misdirection">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span>转嫁：</span>
+                            <input type="text" id="key-transfer-combo" value="C" style="padding: 5px; background-color: #3a3a3a; color: #e0e0e0; border: 1px solid #555; border-radius: 4px; width: 80px;" data-skill="transfer-combo">
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <button id="save-keys" style="padding: 10px 30px; background-color: #4caf50; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; transition: background-color 0.3s;">保存按键设置</button>
+                        <button id="reset-keys" style="padding: 10px 30px; background-color: #f44336; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; transition: background-color 0.3s; margin-left: 10px;">重置按键</button>
+                    </div>
+                </div>
+
+                <!-- 战斗日志 -->
+                <div class="section">
+                    <div class="section-title">战斗日志</div>
+                    <div class="combat-log" id="combat-log">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧统计区 -->
+            <div class="right-area">
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 战斗结束弹窗 -->
+    <div class="battle-end-modal" id="battle-end-modal">
+        <div class="modal-content">
+            <h2>战斗结束</h2>
+            <div class="final-stats">
+                <div>
+                    <span class="stat-label">玩家：</span>
+                    <span class="stat-value" id="final-player-id">未知</span>
+                </div>
+                <div>
+                    <span class="stat-label">战斗时长：</span>
+                    <span class="stat-value" id="final-combat-time">0s</span>
+                </div>
+                <div>
+                    <span class="stat-label">总伤害：</span>
+                    <span class="stat-value" id="final-total-damage">0</span>
+                </div>
+                <div>
+                    <span class="stat-label">最终DPS：</span>
+                    <span class="stat-value" id="final-dps">0</span>
+                </div>
+            </div>
+            <button class="restart-btn" id="restart-btn">重新开始</button>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let battleDuration = 60; // 默认1分钟
+        let battleTime = 0;
+        let totalDamage = 0;
+        let bossHealth = 1000000;
+        let energy = 100;
+        let comboPoints = 0;
+        let isInCombat = false;
+        let combatTimer = null;
+        let energyTimer = null;
+        let autoAttackTimer = null;
+        let dotTickTimer = null;
+        let comboPointTimer = null;
+        let skillCooldowns = {};
+        let activeBuffs = {};
+        let activeDebuffs = {};
+        let damageStats = {};
+        let deathMarkDamage = 0;
+        let isStealthed = false;
+        let attackSpeed = 1.65;
+        let freeFinisher = false; // 套装效果：攻击8%几率令下一次终结技不消耗能量
+        let deadlyPoisonStacks = 0; // 致命毒药层数
+        let cachedComboPoints = 0; // 转嫁技能缓存的连击点数
+        let currentTarget = 'boss'; // 当前目标
+        let keyBindings = {}; // 自定义按键映射
+        // 饰品相关
+        let饰品效果 = {
+            伟大效果: false,
+            伟大冷却: 0,
+            海啸效果: false,
+            海啸冷却: 0
+        };
+        // 饰品属性加成
+        const 饰品属性 = {
+            敏捷: 90, // 暗月卡片:伟大
+            命中等级: 32, // 海啸护符
+            爆击等级: 91 // 海啸护符
+        };
+
+        // 技能配置
+        const skills = {
+            hemorrhage: {
+                name: '出血',
+                energy: 30,
+                cooldown: 1,
+                comboPoints: 1,
+                dotDuration: 15,
+                dotDamage: 500,
+                dotTick: 2
+            },
+            garrote: {
+                name: '锁喉',
+                energy: 30,
+                cooldown: 1,
+                comboPoints: 1,
+                dotDuration: 15,
+                dotDamage: 800,
+                dotTick: 2,
+                requiresStealth: true
+            },
+            eviscerate: {
+                name: '刺骨',
+                energy: 35,
+                isFinisher: true,
+                baseDamage: 1000,
+                perComboPoint: 1200,
+                setBonus: 65
+            },
+            'death-mark': {
+                name: '死亡印记',
+                energy: 25,
+                cooldown: 6,
+                isFinisher: true,
+                duration: 6
+            },
+            'thistle-tea': {
+                name: '菊花茶',
+                energy: 0,
+                cooldown: 300,
+                energyRestore: 20
+            },
+            'shadow-dance': {
+                name: '暗影之舞',
+                energy: 0,
+                cooldown: 60,
+                duration: 10,
+                stealth: true
+            },
+            shadowstep: {
+                name: '暗影步',
+                energy: 0,
+                cooldown: 20,
+                duration: 10,
+                damageBonus: 0.2
+            },
+            rupture: {
+                name: '割裂',
+                energy: 25,
+                isFinisher: true,
+                dotDurations: [8, 10, 12, 14, 16],
+                dotTotalDamage: [1130, 1700, 2270, 2840, 3575],
+                dotTick: 2
+            },
+            'slice-dice': {
+                name: '切割',
+                energy: 25,
+                isFinisher: true,
+                attackSpeedBonus: 0.4,
+                durations: [8, 10, 12, 14, 16]
+            },
+            vanish: {
+                name: '消失',
+                energy: 0,
+                cooldown: 120,
+                duration: 10,
+                stealth: true,
+                damageBonus: 0.1,
+                bonusDuration: 6
+            },
+            preparation: {
+                name: '伺机待发',
+                energy: 0,
+                cooldown: 2100,
+                resets: ['vanish', 'shadowstep', 'misdirection']
+            },
+            misdirection: {
+                name: '嫁祸诀窍',
+                energy: 5,
+                cooldown: 20,
+                duration: 10,
+                damageBonus: 0.15
+            },
+            'transfer-combo': {
+                name: '转嫁',
+                energy: 0,
+                cooldown: 10,
+                range: 40,
+                noGlobalCD: true
+            }
+        };
+
+        // 毒药配置
+        const poisons = {
+            deadly: {
+                name: '致命毒药',
+                procChance: 0.46 + 0.16, // 46% + 16%天赋
+                maxStacks: 5,
+                dotDamage: 67.4,
+                dotDuration: 12,
+                dotTick: 2
+            },
+            instant: {
+                name: '速效毒药',
+                procChance: 0.4 * 1.4, // 40% * 1.4天赋
+                damage: 731
+            }
+        };
+
+        // 初始化
+        function init() {
+            console.log('初始化函数被调用');
+            
+            // 加载按键绑定
+            loadKeyBindings();
+            
+            // 初始化5颗满星
+            comboPoints = 5;
+            
+            // 绑定事件
+            const startBtn = document.getElementById('start-btn');
+            if (startBtn) {
+                startBtn.addEventListener('click', startBattle);
+                console.log('绑定开始战斗按钮事件');
+            }
+            
+            const restartBtn = document.getElementById('restart-btn');
+            if (restartBtn) {
+                restartBtn.addEventListener('click', restartBattle);
+                console.log('绑定重新开始按钮事件');
+            }
+            
+            const battleDurationSelect = document.getElementById('battle-duration');
+            if (battleDurationSelect) {
+                battleDurationSelect.addEventListener('change', function() {
+                    battleDuration = parseInt(this.value);
+                    console.log('战斗时长更改为：', battleDuration);
+                });
+            }
+
+            // 技能按钮点击事件
+            document.querySelectorAll('.skill-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const skillId = this.dataset.skill;
+                    castSkill(skillId);
+                });
+            });
+
+            // 键盘事件
+            document.addEventListener('keydown', function(e) {
+                let key = e.key;
+                
+                // 处理Shift+数字键，确保显示数字而不是符号
+                if (e.shiftKey && /^[!@#$%^&*()]$/.test(key)) {
+                    // 将符号映射回数字
+                    const symbolToNumber = {
+                        '!': '1', '@': '2', '#': '3', '$': '4', '%': '5',
+                        '^': '6', '&': '7', '*': '8', '(': '9', ')': '0'
+                    };
+                    key = symbolToNumber[key] || key;
+                }
+                
+                key = key.toLowerCase();
+                
+                // 处理组合键
+                if (e.shiftKey) key = 'shift+' + key;
+                if (e.ctrlKey) key = 'ctrl+' + key;
+                if (e.altKey) key = 'alt+' + key;
+                
+                const skillId = keyBindings[key];
+                if (skillId) {
+                    castSkill(skillId);
+                }
+            });
+
+            // 为按键输入框添加键盘事件监听
+            document.querySelectorAll('[data-skill]').forEach(input => {
+                input.addEventListener('keydown', function(e) {
+                    e.preventDefault();
+                    let key = e.key;
+                    
+                    // 处理Shift+数字键，确保显示数字而不是符号
+                    if (e.shiftKey && /^[!@#$%^&*()]$/.test(key)) {
+                        // 将符号映射回数字
+                        const symbolToNumber = {
+                            '!': '1', '@': '2', '#': '3', '$': '4', '%': '5',
+                            '^': '6', '&': '7', '*': '8', '(': '9', ')': '0'
+                        };
+                        key = symbolToNumber[key] || key;
+                    }
+                    
+                    key = key.toLowerCase();
+                    
+                    // 处理组合键
+                    if (e.shiftKey) key = 'Shift+' + key;
+                    if (e.ctrlKey) key = 'Ctrl+' + key;
+                    if (e.altKey) key = 'Alt+' + key;
+                    
+                    this.value = key;
+                });
+            });
+
+            // 保存按键设置按钮
+            const saveKeysBtn = document.getElementById('save-keys');
+            if (saveKeysBtn) {
+                saveKeysBtn.addEventListener('click', saveKeyBindings);
+            }
+
+            // 重置按键按钮
+            const resetKeysBtn = document.getElementById('reset-keys');
+            if (resetKeysBtn) {
+                resetKeysBtn.addEventListener('click', resetKeyBindings);
+            }
+
+            // 初始化技能冷却
+            resetCooldowns();
+
+            // 初始化伤害统计
+            resetDamageStats();
+
+            // 更新UI
+            updateUI();
+            console.log('初始化完成');
+        }
+
+        // 加载按键绑定
+        function loadKeyBindings() {
+            const savedBindings = localStorage.getItem('skillKeyBindings');
+            if (savedBindings) {
+                keyBindings = JSON.parse(savedBindings);
+                // 更新输入框值和技能按钮显示
+                updateKeyDisplay();
+            } else {
+                // 默认按键绑定
+                keyBindings = {
+                    '1': 'hemorrhage',
+                    '2': 'garrote',
+                    '3': 'eviscerate',
+                    '4': 'death-mark',
+                    '5': 'thistle-tea',
+                    'q': 'shadow-dance',
+                    'e': 'shadowstep',
+                    't': 'rupture',
+                    'f': 'slice-dice',
+                    'r': 'vanish',
+                    'z': 'preparation',
+                    'x': 'misdirection',
+                    'c': 'transfer-combo'
+                };
+                updateKeyDisplay();
+            }
+        }
+
+        // 保存按键绑定
+        function saveKeyBindings() {
+            const newBindings = {};
+            const skillIds = [
+                'hemorrhage', 'garrote', 'eviscerate', 'death-mark',
+                'thistle-tea', 'shadow-dance', 'shadowstep', 'rupture',
+                'slice-dice', 'vanish', 'preparation', 'misdirection', 'transfer-combo'
+            ];
+
+            skillIds.forEach(skillId => {
+                const inputElement = document.getElementById(`key-${skillId}`);
+                if (inputElement) {
+                    const key = inputElement.value.toLowerCase();
+                    if (key) {
+                        newBindings[key] = skillId;
+                    }
+                }
+            });
+
+            keyBindings = newBindings;
+            localStorage.setItem('skillKeyBindings', JSON.stringify(keyBindings));
+            updateKeyDisplay();
+            addCombatLog('按键设置已保存', 'buff');
+        }
+
+        // 更新按键显示
+        function updateKeyDisplay() {
+            // 更新输入框值
+            Object.keys(keyBindings).forEach(key => {
+                const skillId = keyBindings[key];
+                const inputElement = document.getElementById(`key-${skillId}`);
+                if (inputElement) {
+                    inputElement.value = key;
+                }
+            });
+
+            // 更新技能按钮上的按键标识
+            Object.keys(keyBindings).forEach(key => {
+                const skillId = keyBindings[key];
+                const skillButton = document.querySelector(`.skill-button[data-skill="${skillId}"]`);
+                if (skillButton) {
+                    const keyElement = skillButton.querySelector('.skill-key');
+                    if (keyElement) {
+                        // 简化组合键显示
+                        let displayKey = key;
+                        displayKey = displayKey.replace('shift+', 'S');
+                        displayKey = displayKey.replace('ctrl+', 'C');
+                        displayKey = displayKey.replace('alt+', 'A');
+                        keyElement.textContent = displayKey.toUpperCase();
+                    }
+                }
+            });
+        }
+
+        // 重置按键绑定
+        function resetKeyBindings() {
+            // 默认按键绑定
+            const defaultBindings = {
+                '1': 'hemorrhage',
+                '2': 'garrote',
+                '3': 'eviscerate',
+                '4': 'death-mark',
+                '5': 'thistle-tea',
+                'q': 'shadow-dance',
+                'e': 'shadowstep',
+                't': 'rupture',
+                'f': 'slice-dice',
+                'r': 'vanish',
+                'z': 'preparation',
+                'x': 'misdirection',
+                'c': 'transfer-combo'
+            };
+
+            keyBindings = defaultBindings;
+            localStorage.setItem('skillKeyBindings', JSON.stringify(keyBindings));
+            updateKeyDisplay();
+            addCombatLog('按键设置已重置为默认值', 'buff');
+        }
+
+        // 开始战斗
+        function startBattle() {
+            console.log('开始战斗函数被调用');
+            if (isInCombat) {
+                console.log('已经在战斗中');
+                return;
+            }
+
+            // 重置状态
+            resetBattle();
+
+            // 开始战斗
+            isInCombat = true;
+            document.getElementById('start-btn').disabled = true;
+            document.getElementById('battle-duration').disabled = true;
+
+            // 开始游戏后初始化有5颗星，星是满的
+            comboPoints = 5;
+            addCombatLog('战斗开始，获得5星', 'buff');
+
+            // 自动储存5星到转嫁技能
+            cachedComboPoints = comboPoints;
+            // 保持boss身上有5颗星，不重置为0
+            addCombatLog('自动储存5星到转嫁', 'buff');
+            // 显示缓存的星数
+            const transferButton = document.getElementById('skill-c');
+            const numberElement = transferButton.querySelector('div:last-child');
+            if (numberElement) {
+                numberElement.textContent = cachedComboPoints;
+            }
+
+            // 启动计时器
+            battleTime = 0;
+            combatTimer = setInterval(updateCombat, 1000);
+            console.log('启动战斗计时器');
+
+            // 启动能量恢复
+            energyTimer = setInterval(restoreEnergy, 100); // 每0.1秒恢复1点能量
+            console.log('启动能量恢复');
+
+            // 启动自动攻击
+            autoAttackTimer = setInterval(autoAttack, attackSpeed * 1000);
+            console.log('启动自动攻击');
+
+            // 启动DOT tick
+            dotTickTimer = setInterval(processDOTs, 2000); // 每2秒处理一次DOT
+            console.log('启动DOT tick');
+
+            // 启动连击点自动获取
+            comboPointTimer = setInterval(autoComboPoints, 1250); // 每1.25秒1点
+            console.log('启动连击点自动获取');
+            
+            console.log('战斗开始完成');
+        }
+
+        // 重置战斗
+        function resetBattle() {
+            console.log('重置战斗函数被调用');
+            // 清除计时器
+            if (combatTimer) clearInterval(combatTimer);
+            if (energyTimer) clearInterval(energyTimer);
+            if (autoAttackTimer) clearInterval(autoAttackTimer);
+            if (dotTickTimer) clearInterval(dotTickTimer);
+            if (comboPointTimer) clearInterval(comboPointTimer);
+
+            // 重置状态
+            battleTime = 0;
+            totalDamage = 0;
+            bossHealth = 1000000;
+            energy = 100;
+            comboPoints = 5; // 保持5颗满星
+            isInCombat = false;
+            deathMarkDamage = 0;
+            isStealthed = false;
+            attackSpeed = 1.65;
+            freeFinisher = false;
+            deadlyPoisonStacks = 0;
+            cachedComboPoints = 0;
+            currentTarget = 'boss';
+            // 清除技能上的数字
+            const transferButton = document.getElementById('skill-c');
+            const numberElement = transferButton.querySelector('div:last-child');
+            if (numberElement) {
+                numberElement.textContent = '';
+            }
+
+            // 重置饰品效果
+            饰品效果 = {
+                伟大效果: false,
+                伟大冷却: 0,
+                海啸效果: false,
+                海啸冷却: 0
+            };
+
+            // 重置冷却
+            resetCooldowns();
+
+            // 重置buff/debuff
+            activeBuffs = {};
+            activeDebuffs = {};
+
+            // 重置伤害统计
+            resetDamageStats();
+
+            // 重置UI
+            updateUI();
+            document.getElementById('start-btn').disabled = false;
+            document.getElementById('battle-duration').disabled = false;
+            document.getElementById('battle-end-modal').style.display = 'none';
+            console.log('重置战斗完成');
+        }
+
+        // 重新开始战斗
+        function restartBattle() {
+            console.log('重新开始战斗函数被调用');
+            resetBattle();
+            // 回到初始状态，需要重新选择战斗时长
+        }
+
+        // 重置技能冷却
+        function resetCooldowns() {
+            skillCooldowns = {};
+            Object.keys(skills).forEach(skillId => {
+                skillCooldowns[skillId] = 0;
+            });
+        }
+
+        // 重置伤害统计
+        function resetDamageStats() {
+            damageStats = {
+                hemorrhage: { damage: 0, count: 0, crits: 0 },
+                garrote: { damage: 0, count: 0, crits: 0 },
+                eviscerate: { damage: 0, count: 0, crits: 0 },
+                'death-mark': { damage: 0, count: 0, crits: 0 },
+                rupture: { damage: 0, count: 0, crits: 0 },
+                'auto-attack': { damage: 0, count: 0, crits: 0 },
+                'deadly-poison': { damage: 0, count: 0, crits: 0 },
+                'instant-poison': { damage: 0, count: 0, crits: 0 },
+                'transfer-combo': { damage: 0, count: 0, crits: 0 }
+            };
+        }
+
+        // 能量恢复
+        function restoreEnergy() {
+            energy = Math.min(energy + 1, 100);
+            updateUI();
+        }
+
+        // 自动获取连击点
+        function autoComboPoints() {
+            if (isInCombat) {
+                addComboPoints(1);
+            }
+        }
+
+        // 添加连击点
+        function addComboPoints(points) {
+            comboPoints = Math.min(comboPoints + points, 5);
+            updateUI();
+        }
+
+        // 消耗连击点
+        function spendComboPoints() {
+            // 无情打击：20%/40%/60%概率回25点能量
+            const relentlessStrikesChance = 0.6; // 假设3点天赋
+            if (Math.random() < relentlessStrikesChance) {
+                energy = Math.min(energy + 25, 100);
+                addCombatLog(`无情打击触发，恢复25点能量`, 'buff');
+            }
+            comboPoints = 0;
+            updateUI();
+        }
+
+        // 释放技能
+        function castSkill(skillId) {
+            if (!isInCombat) return;
+
+            const skill = skills[skillId];
+            if (!skill) return;
+
+            // 检查冷却
+            if (skillCooldowns[skillId] > 0) return;
+
+            // 检查能量
+            if (energy < skill.energy) return;
+
+            // 检查潜行要求
+            if (skill.requiresStealth && !isStealthed) return;
+
+            // 检查终结技连击点要求
+            if (skill.isFinisher && comboPoints === 0) return;
+
+            // 消耗能量
+            energy -= skill.energy;
+
+            // 设置冷却
+            if (skill.cooldown) {
+                skillCooldowns[skillId] = skill.cooldown;
+            }
+
+            // 转嫁技能不占用公共CD，直接使用
+
+            // 处理技能效果
+            switch (skillId) {
+                case 'hemorrhage':
+                    // 检查是否在潜行状态
+                    if (isStealthed) {
+                        // 伏击逻辑
+                        if (energy < 40) return; // 检查能量
+                        energy -= 40;
+                        // 计算伏击伤害：330%武器伤害 + 1089
+                        const weaponDamage = (246 + 370) / 2; // 主手武器平均伤害
+                        const ambushDamage = Math.floor(weaponDamage * 3.3 + 1089);
+                        dealDamage(ambushDamage, '伏击');
+                        addComboPoints(2); // 奖励2个连击点
+                        // 如果有缓存的连击点，新产生的连击点会清除缓存
+                        if (cachedComboPoints > 0) {
+                            addCombatLog(`新产生的连击点清除了缓存的${cachedComboPoints}颗连击点`, 'debuff');
+                            cachedComboPoints = 0;
+                            // 清除技能上的数字
+                            const transferButton = document.getElementById('skill-c');
+                            const numberElement = transferButton.querySelector('div:last-child');
+                            if (numberElement) {
+                                numberElement.textContent = '';
+                            }
+                        }
+                        addCombatLog(`使用伏击，造成${ambushDamage}点伤害，获得2点连击点`, 'damage');
+                    } else {
+                        // 出血逻辑
+                        addComboPoints(skill.comboPoints);
+                        // 如果有缓存的连击点，新产生的连击点会清除缓存
+                        if (cachedComboPoints > 0) {
+                            addCombatLog(`新产生的连击点清除了缓存的${cachedComboPoints}颗连击点`, 'debuff');
+                            cachedComboPoints = 0;
+                            // 清除技能上的数字
+                            const transferButton = document.getElementById('skill-c');
+                            const numberElement = transferButton.querySelector('div:last-child');
+                            if (numberElement) {
+                                numberElement.textContent = '';
+                            }
+                        }
+                        // 添加出血DOT
+                        if (!activeDebuffs.hemorrhage) {
+                            activeDebuffs.hemorrhage = {
+                                name: skill.name,
+                                duration: skill.dotDuration,
+                                tick: skill.dotTick,
+                                damage: skill.dotDamage
+                            };
+                        } else {
+                            activeDebuffs.hemorrhage.duration = skill.dotDuration;
+                        }
+                        addCombatLog(`使用出血，获得${skill.comboPoints}点连击点`, 'buff');
+                    }
+                    break;
+                case 'garrote':
+                    // 锁喉逻辑
+                    addComboPoints(skill.comboPoints);
+                    // 如果有缓存的连击点，新产生的连击点会清除缓存
+                    if (cachedComboPoints > 0) {
+                        addCombatLog(`新产生的连击点清除了缓存的${cachedComboPoints}颗连击点`, 'debuff');
+                        cachedComboPoints = 0;
+                        // 清除技能上的数字
+                        const transferButton = document.getElementById('skill-c');
+                        const numberElement = transferButton.querySelector('div:last-child');
+                        if (numberElement) {
+                            numberElement.textContent = '';
+                        }
+                    }
+                    // 添加锁喉DOT
+                    if (!activeDebuffs.garrote) {
+                        activeDebuffs.garrote = {
+                            name: skill.name,
+                            duration: skill.dotDuration,
+                            tick: skill.dotTick,
+                            damage: skill.dotDamage
+                        };
+                    } else {
+                        activeDebuffs.garrote.duration = skill.dotDuration;
+                    }
+                    addCombatLog(`使用锁喉，获得${skill.comboPoints}点连击点`, 'buff');
+                    break;
+                case 'eviscerate':
+                    // 刺骨逻辑
+                    const eviscerateDamage = calculateFinisherDamage(skillId, comboPoints);
+                    dealDamage(eviscerateDamage, skill.name);
+                    addCombatLog(`使用刺骨，造成${eviscerateDamage}点伤害`, 'damage');
+                    spendComboPoints();
+                    break;
+                case 'death-mark':
+                    // 死亡印记逻辑
+                    // 储存伤害
+                    deathMarkDamage = 0;
+                    // 添加死亡印记到持续效果
+                    activeBuffs['death-mark'] = {
+                        name: '死亡印记',
+                        duration: skill.duration
+                    };
+                    // 开始储存伤害
+                    setTimeout(() => {
+                        // 释放储存的伤害
+                        const markDamage = Math.floor(deathMarkDamage * 0.5);
+                        if (markDamage > 0) {
+                            dealDamage(markDamage, '死亡印记');
+                            addCombatLog(`死亡印记释放，造成${markDamage}点伤害`, 'damage');
+                        }
+                        // 刷新割裂逻辑（爆炸时）
+                        if (activeDebuffs.rupture) {
+                            let refreshChance = comboPoints === 5 ? 1 : (0.2 * comboPoints);
+                            if (Math.random() < refreshChance) {
+                                // 完全重置割裂，就像重新释放了一个5星割裂
+                                activeDebuffs.rupture = {
+                                    name: '割裂',
+                                    duration: 16, // 5星割裂时长
+                                    tick: skills.rupture.dotTick,
+                                    totalDamage: skills.rupture.dotTotalDamage[4], // 5星伤害
+                                    ticks: Math.floor(16 / skills.rupture.dotTick)
+                                };
+                                addCombatLog(`死亡印记爆炸刷新了割裂，持续时间重置为16秒`, 'buff');
+                            }
+                        }
+                        // 移除死亡印记效果
+                        delete activeBuffs['death-mark'];
+                    }, skill.duration * 1000);
+                    addCombatLog(`使用死亡印记，开始储存伤害`, 'buff');
+                    spendComboPoints();
+                    break;
+                case 'thistle-tea':
+                    // 菊花茶逻辑
+                    energy = Math.min(energy + skill.energyRestore, 100);
+                    addCombatLog(`使用菊花茶，恢复${skill.energyRestore}点能量`, 'buff');
+                    break;
+                case 'shadow-dance':
+                    // 暗影之舞逻辑
+                    isStealthed = true;
+                    activeBuffs['shadow-dance'] = {
+                        name: skill.name,
+                        duration: skill.duration
+                    };
+                    addCombatLog(`使用暗影之舞，进入潜行状态`, 'buff');
+                    setTimeout(() => {
+                        isStealthed = false;
+                        delete activeBuffs['shadow-dance'];
+                        addCombatLog(`暗影之舞结束`, 'debuff');
+                    }, skill.duration * 1000);
+                    break;
+                case 'shadowstep':
+                    // 暗影步逻辑
+                    activeBuffs.shadowstep = {
+                        name: skill.name,
+                        duration: skill.duration,
+                        damageBonus: skill.damageBonus
+                    };
+                    addCombatLog(`使用暗影步，下一个技能伤害+20%`, 'buff');
+                    break;
+                case 'rupture':
+                    // 割裂逻辑
+                    const ruptureDuration = skill.dotDurations[comboPoints - 1];
+                    const ruptureTotalDamage = skill.dotTotalDamage[comboPoints - 1];
+                    activeDebuffs.rupture = {
+                        name: skill.name,
+                        duration: ruptureDuration,
+                        tick: skill.dotTick,
+                        totalDamage: ruptureTotalDamage,
+                        ticks: Math.floor(ruptureDuration / skill.dotTick)
+                    };
+                    addCombatLog(`使用割裂，持续${ruptureDuration}秒`, 'buff');
+                    spendComboPoints();
+                    break;
+                case 'slice-dice':
+                    // 切割逻辑
+                    const sliceDuration = skill.durations[comboPoints - 1];
+                    attackSpeed = 1.65 * (1 - skill.attackSpeedBonus);
+                    activeBuffs['slice-dice'] = {
+                        name: skill.name,
+                        duration: sliceDuration
+                    };
+                    addCombatLog(`使用切割，攻速+40%，持续${sliceDuration}秒`, 'buff');
+                    spendComboPoints();
+                    break;
+                case 'vanish':
+                    // 消失逻辑
+                    isStealthed = true;
+                    activeBuffs.vanish = {
+                        name: skill.name,
+                        duration: skill.duration
+                    };
+                    activeBuffs['master-assassin'] = {
+                        name: '敏锐大师',
+                        duration: skill.bonusDuration,
+                        damageBonus: skill.damageBonus
+                    };
+                    addCombatLog(`使用消失，进入潜行状态，获得敏锐大师`, 'buff');
+                    setTimeout(() => {
+                        isStealthed = false;
+                        delete activeBuffs.vanish;
+                        addCombatLog(`消失结束`, 'debuff');
+                    }, skill.duration * 1000);
+                    setTimeout(() => {
+                        delete activeBuffs['master-assassin'];
+                        addCombatLog(`敏锐大师结束`, 'debuff');
+                    }, skill.bonusDuration * 1000);
+                    break;
+                case 'preparation':
+                    // 伺机待发逻辑
+                    skill.resets.forEach(resetSkill => {
+                        skillCooldowns[resetSkill] = 0;
+                    });
+                    addCombatLog(`使用伺机待发，重置技能冷却`, 'buff');
+                    break;
+                case 'misdirection':
+                    // 嫁祸诀窍逻辑
+                    activeBuffs.misdirection = {
+                        name: skill.name,
+                        duration: skill.duration,
+                        damageBonus: skill.damageBonus
+                    };
+                    addCombatLog(`使用嫁祸诀窍，伤害+15%，持续${skill.duration}秒`, 'buff');
+                    break;
+                case 'transfer-combo':
+                    // 转嫁技能逻辑（按照魔兽世界逻辑）
+                    if (cachedComboPoints === 0) {
+                        // 第一次使用：移除并储存连击点数
+                        if (comboPoints > 0) {
+                            cachedComboPoints = comboPoints;
+                            comboPoints = 0;
+                            addCombatLog(`使用转嫁，储存了${cachedComboPoints}颗连击点`, 'buff');
+                            // 显示缓存的星数
+                            const transferButton = document.getElementById('skill-c');
+                            const numberElement = transferButton.querySelector('div:last-child');
+                            if (numberElement) {
+                                numberElement.textContent = cachedComboPoints;
+                            }
+                        } else {
+                            addCombatLog(`没有连击点可以储存`, 'debuff');
+                        }
+                    } else {
+                        // 第二次使用：将储存的星转移到目标身上
+                        if (cachedComboPoints > 0) {
+                            comboPoints = cachedComboPoints;
+                            cachedComboPoints = 0;
+                            addCombatLog(`使用转嫁，将${comboPoints}颗连击点转移到目标身上`, 'buff');
+                            // 清除技能上的数字
+                            const transferButton = document.getElementById('skill-c');
+                            const numberElement = transferButton.querySelector('div:last-child');
+                            if (numberElement) {
+                                numberElement.textContent = '';
+                            }
+                            // 开始冷却
+                            skillCooldowns['transfer-combo'] = skills['transfer-combo'].cooldown;
+                        }
+                    }
+                    break;
+            }
+
+            // 更新UI
+            updateUI();
+        }
+
+        // 计算终结技伤害
+        function calculateFinisherDamage(skillId, points) {
+            const skill = skills[skillId];
+            let damage = 0;
+
+            switch (skillId) {
+                case 'eviscerate':
+                    // 刺骨伤害：基础伤害 + 每星伤害 * 点数 + 套装加成 * 点数
+                    damage = skill.baseDamage + (skill.perComboPoint * points) + (skill.setBonus * points);
+                    // 连击点20%加成
+                    damage *= (1 + 0.2 * points);
+                    break;
+                case 'rupture':
+                    // 割裂总伤害已在技能中定义
+                    damage = skill.dotTotalDamage[points - 1];
+                    break;
+            }
+
+            // 应用伤害加成
+            damage = applyDamageBonuses(damage);
+
+            return Math.floor(damage);
+        }
+
+        // 应用伤害加成
+        function applyDamageBonuses(damage) {
+            let bonus = 1;
+
+            // 伤害加成优先级：敏锐大师 > 暗影步 > 剃心者 > 嫁祸诀窍
+            if (activeBuffs['master-assassin']) {
+                bonus += activeBuffs['master-assassin'].damageBonus;
+            }
+            if (activeBuffs.shadowstep) {
+                bonus += activeBuffs.shadowstep.damageBonus;
+            }
+            if (activeBuffs['razorheart']) {
+                bonus += 0.2; // 剃心者特效20%
+            }
+            if (activeBuffs.misdirection) {
+                bonus += activeBuffs.misdirection.damageBonus;
+            }
+
+            // 剧毒天赋7%加成
+            bonus *= 1.07;
+
+            return damage * bonus;
+        }
+
+        // 自动攻击
+        function autoAttack() {
+            if (!isInCombat) return;
+
+            // 主手攻击
+            let mainHandDamage = Math.floor(Math.random() * (370 - 246 + 1)) + 246;
+            mainHandDamage = applyDamageBonuses(mainHandDamage);
+            dealDamage(Math.floor(mainHandDamage), 'auto-attack');
+
+            // 副手攻击（50%伤害）
+            let offHandDamage = Math.floor((Math.random() * (318 - 171 + 1)) + 171) * 0.5;
+            offHandDamage = applyDamageBonuses(offHandDamage);
+            dealDamage(Math.floor(offHandDamage), 'auto-attack');
+
+            // 主手致命毒药触发
+            if (Math.random() < poisons.deadly.procChance) {
+                deadlyPoisonStacks = Math.min(deadlyPoisonStacks + 1, poisons.deadly.maxStacks);
+                if (!activeDebuffs['deadly-poison']) {
+                    activeDebuffs['deadly-poison'] = {
+                        name: '致命毒药',
+                        duration: poisons.deadly.dotDuration,
+                        tick: poisons.deadly.dotTick,
+                        stacks: deadlyPoisonStacks
+                    };
+                } else {
+                    activeDebuffs['deadly-poison'].duration = poisons.deadly.dotDuration;
+                    activeDebuffs['deadly-poison'].stacks = deadlyPoisonStacks;
+                }
+                addCombatLog(`致命毒药触发，当前${deadlyPoisonStacks}层`, 'debuff');
+            }
+
+            // 副手速效毒药触发
+            if (Math.random() < poisons.instant.procChance) {
+                let instantDamage = poisons.instant.damage;
+                instantDamage = applyDamageBonuses(instantDamage);
+                dealDamage(Math.floor(instantDamage), 'instant-poison');
+                addCombatLog(`速效毒药触发，造成${Math.floor(instantDamage)}点伤害`, 'damage');
+            }
+
+            // 剃心者特效触发
+            if (Math.random() < 0.1) { // 10%几率
+                activeBuffs['razorheart'] = {
+                    name: '剃心者',
+                    duration: 10
+                };
+                addCombatLog(`剃心者特效触发，攻强+442，伤害+20%`, 'buff');
+                setTimeout(() => {
+                    delete activeBuffs['razorheart'];
+                    addCombatLog(`剃心者特效结束`, 'debuff');
+                }, 10000);
+            }
+
+            // 套装效果：8%几率令下一次终结技不消耗能量
+            if (Math.random() < 0.08) {
+                freeFinisher = true;
+                addCombatLog(`套装效果触发，下一次终结技不消耗能量`, 'buff');
+            }
+        }
+
+        // 处理DOT伤害
+        function processDOTs() {
+            if (!isInCombat) return;
+
+            // 处理所有DOT
+            Object.keys(activeDebuffs).forEach(debuffId => {
+                const debuff = activeDebuffs[debuffId];
+                let damage = 0;
+
+                switch (debuffId) {
+                    case 'hemorrhage':
+                    case 'garrote':
+                        damage = debuff.damage;
+                        break;
+                    case 'rupture':
+                        damage = Math.floor(debuff.totalDamage / debuff.ticks);
+                        break;
+                    case 'deadly-poison':
+                        damage = poisons.deadly.dotDamage * debuff.stacks;
+                        // 5层时传播速效毒药
+                        if (debuff.stacks === 5 && Math.random() < 0.3) { // 假设30%传播几率
+                            let spreadDamage = poisons.instant.damage;
+                            spreadDamage = applyDamageBonuses(spreadDamage);
+                            dealDamage(Math.floor(spreadDamage), 'instant-poison');
+                            addCombatLog(`致命毒药传播速效毒药，造成${Math.floor(spreadDamage)}点伤害`, 'damage');
+                        }
+                        break;
+                }
+
+                if (damage > 0) {
+                    damage = applyDamageBonuses(damage);
+                    dealDamage(Math.floor(damage), debuffId);
+                    addCombatLog(`${debuff.name}造成${Math.floor(damage)}点伤害`, 'damage');
+                }
+
+                // 持续时间在updateCombat中减少，这里只处理伤害
+                if (debuff.duration <= 0) {
+                    if (debuffId === 'deadly-poison') {
+                        deadlyPoisonStacks = 0;
+                    }
+                    delete activeDebuffs[debuffId];
+                    addCombatLog(`${debuff.name}效果结束`, 'debuff');
+                }
+            });
+
+            updateUI();
+        }
+
+        // 造成伤害
+        function dealDamage(damage, source) {
+            totalDamage += damage;
+            bossHealth = Math.max(bossHealth - damage, 0);
+
+            // 记录死亡印记伤害
+            deathMarkDamage += damage;
+
+            // 更新伤害统计
+            if (damageStats[source]) {
+                damageStats[source].damage += damage;
+                damageStats[source].count += 1;
+                // 假设20%暴击率
+                const isCrit = Math.random() < 0.2;
+                if (isCrit) {
+                    damageStats[source].crits += 1;
+                    // 海啸护符触发：近战和远程爆击有25%的几率使攻击强度提高1190点，持续10秒，内置CD 45秒
+                    if (!饰品效果.海啸效果 && 饰品效果.海啸冷却 <= 0) {
+                        if (Math.random() < 0.25) {
+                            饰品效果.海啸效果 = true;
+                            饰品效果.海啸冷却 = 45;
+                            activeBuffs['海啸护符'] = {
+                                name: '海啸护符',
+                                duration: 10,
+                                attackPower: 1190
+                            };
+                            addCombatLog('海啸护符触发，攻击强度提高1190点，持续10秒', 'buff');
+                            setTimeout(() => {
+                                饰品效果.海啸效果 = false;
+                                delete activeBuffs['海啸护符'];
+                                addCombatLog('海啸护符效果结束', 'debuff');
+                            }, 10000);
+                        }
+                    }
+                }
+            }
+
+            // 暗月卡片:伟大触发：造成伤害时有一定几率获得伟大效果，敏捷提高300点，持续15秒，内置CD 45秒
+            if (!饰品效果.伟大效果 && 饰品效果.伟大冷却 <= 0) {
+                if (Math.random() < 0.1) { // 假设10%触发几率
+                    饰品效果.伟大效果 = true;
+                    饰品效果.伟大冷却 = 45;
+                    activeBuffs['暗月卡片:伟大'] = {
+                        name: '暗月卡片:伟大',
+                        duration: 15,
+                        agility: 300
+                    };
+                    addCombatLog('暗月卡片:伟大触发，敏捷提高300点，持续15秒', 'buff');
+                    setTimeout(() => {
+                        饰品效果.伟大效果 = false;
+                        delete activeBuffs['暗月卡片:伟大'];
+                        addCombatLog('暗月卡片:伟大效果结束', 'debuff');
+                    }, 15000);
+                }
+            }
+
+            // 检查战斗结束条件
+            if (bossHealth <= 0 || battleTime >= battleDuration) {
+                endBattle();
+            }
+
+            // 实时更新UI，确保死亡印记伤害加层实时显示
+            updateUI();
+        }
+
+        // 战斗更新
+        function updateCombat() {
+            if (!isInCombat) return;
+
+            battleTime++;
+
+            // 更新技能冷却
+            Object.keys(skillCooldowns).forEach(skillId => {
+                if (skillCooldowns[skillId] > 0) {
+                    skillCooldowns[skillId]--;
+                }
+            });
+
+            // 更新饰品冷却时间
+            if (饰品效果.伟大冷却 > 0) {
+                饰品效果.伟大冷却--;
+            }
+            if (饰品效果.海啸冷却 > 0) {
+                饰品效果.海啸冷却--;
+            }
+
+            // 更新buff持续时间
+            Object.keys(activeBuffs).forEach(buffId => {
+                if (activeBuffs[buffId].duration) {
+                    activeBuffs[buffId].duration--;
+                    if (activeBuffs[buffId].duration <= 0) {
+                        delete activeBuffs[buffId];
+                    }
+                }
+            });
+
+            // 更新debuff持续时间
+            Object.keys(activeDebuffs).forEach(debuffId => {
+                if (activeDebuffs[debuffId].duration) {
+                    // 只在updateCombat中减少持续时间，避免与processDOTs重复
+                    activeDebuffs[debuffId].duration--;
+                    if (activeDebuffs[debuffId].duration <= 0) {
+                        if (debuffId === 'deadly-poison') {
+                            deadlyPoisonStacks = 0;
+                        }
+                        delete activeDebuffs[debuffId];
+                    }
+                }
+            });
+
+            // 检查战斗结束条件
+            if (bossHealth <= 0 || battleTime >= battleDuration) {
+                endBattle();
+            }
+
+            // 实时更新UI，确保死亡印记伤害加层实时显示
+            updateUI();
+        }
+
+        // 结束战斗
+        function endBattle() {
+            // 清除计时器
+            if (combatTimer) clearInterval(combatTimer);
+            if (energyTimer) clearInterval(energyTimer);
+            if (autoAttackTimer) clearInterval(autoAttackTimer);
+            if (dotTickTimer) clearInterval(dotTickTimer);
+            if (comboPointTimer) clearInterval(comboPointTimer);
+
+            isInCombat = false;
+            
+            // 获取玩家ID
+            const playerId = document.getElementById('player-id').value || '未知';
+            
+            // 更新战斗结束弹窗
+            document.getElementById('final-player-id').textContent = playerId;
+            document.getElementById('final-combat-time').textContent = battleTime + 's';
+            document.getElementById('final-total-damage').textContent = totalDamage.toLocaleString();
+            const dps = battleTime > 0 ? Math.floor(totalDamage / battleTime) : 0;
+            document.getElementById('final-dps').textContent = dps;
+            
+            // 显示战斗结束弹窗
+            document.getElementById('battle-end-modal').style.display = 'flex';
+        }
+
+        // 添加战斗日志
+        function addCombatLog(message, type = 'normal') {
+            const logElement = document.getElementById('combat-log');
+            const timestamp = new Date().toLocaleTimeString('zh-CN', { hour12: false, minute: '2-digit', second: '2-digit' });
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            logElement.appendChild(logEntry);
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        // 更新UI
+        function updateUI() {
+            // 更新能量条
+            document.getElementById('energy-fill').style.width = (energy / 100) * 100 + '%';
+            document.getElementById('energy-text').textContent = energy + ' / 100';
+
+            // 更新连击点
+            const comboPointElements = document.querySelectorAll('.combo-point');
+            comboPointElements.forEach((element, index) => {
+                if (index < comboPoints) {
+                    element.classList.add('active');
+                } else {
+                    element.classList.remove('active');
+                }
+            });
+            document.getElementById('combo-points-display').textContent = comboPoints;
+
+            // 更新Boss血条
+            const bossHealthPercent = (bossHealth / 1000000) * 100;
+            document.getElementById('boss-health-fill').style.width = bossHealthPercent + '%';
+            document.getElementById('boss-health-text').textContent = bossHealth.toLocaleString() + ' / 1,000,000';
+
+            // 更新基础统计
+            document.getElementById('total-damage').textContent = totalDamage.toLocaleString();
+            const dps = battleTime > 0 ? Math.floor(totalDamage / battleTime) : 0;
+            document.getElementById('dps').textContent = dps;
+            document.getElementById('combat-time').textContent = battleTime + 's';
+
+            // 更新倒计时
+            const remainingTime = battleDuration - battleTime;
+            if (remainingTime > 0) {
+                const minutes = Math.floor(remainingTime / 60);
+                const seconds = remainingTime % 60;
+                document.getElementById('countdown').textContent = `剩余时间：${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            } else {
+                document.getElementById('countdown').textContent = '战斗结束';
+            }
+            
+            // 更新战斗时间
+            const combatMinutes = Math.floor(battleTime / 60);
+            const combatSeconds = battleTime % 60;
+            document.getElementById('combat-timer').textContent = `战斗时间：${combatMinutes.toString().padStart(2, '0')}:${combatSeconds.toString().padStart(2, '0')}`;
+
+            // 更新技能冷却
+            document.querySelectorAll('.skill-button').forEach(button => {
+                const skillId = button.dataset.skill;
+                const cooldown = skillCooldowns[skillId] || 0;
+                
+                // 清除现有冷却
+                const existingCooldown = button.querySelector('.cooldown-overlay');
+                if (existingCooldown) {
+                    existingCooldown.remove();
+                }
+                
+                // 添加冷却
+                if (cooldown > 0) {
+                    const cooldownOverlay = document.createElement('div');
+                    cooldownOverlay.className = 'cooldown-overlay';
+                    cooldownOverlay.textContent = cooldown;
+                    button.appendChild(cooldownOverlay);
+                }
+            });
+
+            // 更新buff/debuff
+            const buffsDebuffsElement = document.getElementById('buffs-debuffs');
+            buffsDebuffsElement.innerHTML = '';
+
+            // 技能图标映射
+            const skillIcons = {
+                'hemorrhage': 'logo/chuxue.png',
+                'garrote': 'logo/suohou.png',
+                'eviscerate': 'logo/cigu.png',
+                'death-mark': 'logo/siyin.png',
+                'thistle-tea': 'logo/juhuacha.png',
+                'shadow-dance': 'logo/yingwu.png',
+                'shadowstep': 'logo/anyinbu.png',
+                'rupture': 'logo/gelie.png',
+                'slice-dice': 'logo/qiege.png',
+                'vanish': 'logo/xiaoshi.png',
+                'preparation': 'logo/sijidaifa.png',
+                'misdirection': 'logo/jiahuo.png',
+                'transfer-combo': 'logo/zhuanjia.png',
+                '暗月卡片:伟大': 'logo/weida.png',
+                '海啸护符': 'logo/haixiao.png',
+                '致命药膏': 'logo/zhiming.png',
+                '伏击': 'logo/fuji.png'
+            };
+
+            // 添加buffs
+            Object.keys(activeBuffs).forEach(buffId => {
+                const buff = activeBuffs[buffId];
+                const buffElement = document.createElement('div');
+                buffElement.className = 'buff';
+                // 添加技能图标
+                if (skillIcons[buffId]) {
+                    buffElement.style.backgroundImage = `url('${skillIcons[buffId]}')`;
+                }
+                if (buff.duration) {
+                    const durationElement = document.createElement('div');
+                    durationElement.className = 'buff-duration';
+                    durationElement.textContent = buff.duration;
+                    buffElement.appendChild(durationElement);
+                }
+                buffsDebuffsElement.appendChild(buffElement);
+            });
+
+            // 添加debuffs
+            Object.keys(activeDebuffs).forEach(debuffId => {
+                const debuff = activeDebuffs[debuffId];
+                const debuffElement = document.createElement('div');
+                debuffElement.className = 'debuff';
+                // 添加技能图标
+                if (skillIcons[debuffId]) {
+                    debuffElement.style.backgroundImage = `url('${skillIcons[debuffId]}')`;
+                }
+                if (debuff.duration) {
+                    const durationElement = document.createElement('div');
+                    durationElement.className = 'debuff-duration';
+                    durationElement.textContent = debuff.duration;
+                    debuffElement.appendChild(durationElement);
+                }
+                buffsDebuffsElement.appendChild(debuffElement);
+            });
+
+            // 更新技能伤害统计
+            document.getElementById('stat-auto-attack').textContent = damageStats['auto-attack'].damage;
+            document.getElementById('stat-instant-poison').textContent = damageStats['instant-poison'].damage;
+            document.getElementById('stat-deadly-poison').textContent = damageStats['deadly-poison'].damage;
+            document.getElementById('stat-death-mark').textContent = damageStats['death-mark'].damage;
+            document.getElementById('stat-rupture').textContent = damageStats['rupture'].damage;
+            document.getElementById('stat-eviscerate').textContent = damageStats['eviscerate'].damage;
+            document.getElementById('stat-hemorrhage').textContent = damageStats['hemorrhage'].damage;
+            document.getElementById('stat-garrote').textContent = damageStats['garrote'].damage;
+
+            // 更新伤害统计详情表格
+            updateDamageStatsTable();
+        }
+
+        // 更新伤害统计详情表格
+        function updateDamageStatsTable() {
+            const tableBody = document.querySelector('#damage-stats-table tbody');
+            if (!tableBody) return;
+
+            tableBody.innerHTML = '';
+
+            // 伤害类型名称映射
+            const damageTypeNames = {
+                'auto-attack': '平砍',
+                'instant-poison': '速效毒药',
+                'deadly-poison': '致命毒药',
+                'death-mark': '死亡印记',
+                'rupture': '割裂',
+                'eviscerate': '刺骨',
+                'hemorrhage': '出血',
+                'garrote': '锁喉'
+            };
+
+            // 计算总伤害
+            const totalDmg = totalDamage;
+
+            // 生成表格行
+            Object.keys(damageStats).forEach(damageType => {
+                const stats = damageStats[damageType];
+                if (stats.damage > 0) {
+                    const row = document.createElement('tr');
+                    
+                    // 伤害类型
+                    const typeCell = document.createElement('td');
+                    typeCell.textContent = damageTypeNames[damageType] || damageType;
+                    row.appendChild(typeCell);
+
+                    // 占比
+                    const percentageCell = document.createElement('td');
+                    const percentage = totalDmg > 0 ? (stats.damage / totalDmg * 100).toFixed(1) + '%' : '0%';
+                    percentageCell.textContent = percentage;
+                    row.appendChild(percentageCell);
+
+                    // 总伤害
+                    const damageCell = document.createElement('td');
+                    damageCell.textContent = stats.damage.toLocaleString();
+                    row.appendChild(damageCell);
+
+                    // 次数
+                    const countCell = document.createElement('td');
+                    countCell.textContent = stats.count;
+                    row.appendChild(countCell);
+
+                    // 平均伤害
+                    const avgCell = document.createElement('td');
+                    const avgDamage = stats.count > 0 ? Math.floor(stats.damage / stats.count) : 0;
+                    avgCell.textContent = avgDamage.toLocaleString();
+                    row.appendChild(avgCell);
+
+                    // 暴击率
+                    const critCell = document.createElement('td');
+                    const critRate = stats.count > 0 ? (stats.crits / stats.count * 100).toFixed(1) + '%' : '0%';
+                    critCell.textContent = critRate;
+                    row.appendChild(critCell);
+
+                    // DPS
+                    const dpsCell = document.createElement('td');
+                    const dps = battleTime > 0 ? Math.floor(stats.damage / battleTime) : 0;
+                    dpsCell.textContent = dps;
+                    row.appendChild(dpsCell);
+
+                    tableBody.appendChild(row);
+                }
+            });
+
+            // 添加总计行
+            if (totalDmg > 0) {
+                const totalRow = document.createElement('tr');
+                
+                const totalTypeCell = document.createElement('td');
+                totalTypeCell.textContent = '总计';
+                totalTypeCell.style.fontWeight = 'bold';
+                totalRow.appendChild(totalTypeCell);
+
+                const totalPercentageCell = document.createElement('td');
+                totalPercentageCell.textContent = '100.0%';
+                totalRow.appendChild(totalPercentageCell);
+
+                const totalDamageCell = document.createElement('td');
+                totalDamageCell.textContent = totalDmg.toLocaleString();
+                totalRow.appendChild(totalDamageCell);
+
+                const totalCountCell = document.createElement('td');
+                const totalCount = Object.values(damageStats).reduce((sum, stats) => sum + stats.count, 0);
+                totalCountCell.textContent = totalCount;
+                totalRow.appendChild(totalCountCell);
+
+                const totalAvgCell = document.createElement('td');
+                const totalAvg = totalCount > 0 ? Math.floor(totalDmg / totalCount) : 0;
+                totalAvgCell.textContent = totalAvg.toLocaleString();
+                totalRow.appendChild(totalAvgCell);
+
+                const totalCritCell = document.createElement('td');
+                const totalCrits = Object.values(damageStats).reduce((sum, stats) => sum + stats.crits, 0);
+                const totalCritRate = totalCount > 0 ? (totalCrits / totalCount * 100).toFixed(1) + '%' : '0%';
+                totalCritCell.textContent = totalCritRate;
+                totalRow.appendChild(totalCritCell);
+
+                const totalDpsCell = document.createElement('td');
+                const totalDps = battleTime > 0 ? Math.floor(totalDmg / battleTime) : 0;
+                totalDpsCell.textContent = totalDps;
+                totalRow.appendChild(totalDpsCell);
+
+                tableBody.appendChild(totalRow);
+            }
+        }
+
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
