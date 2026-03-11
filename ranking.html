@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时光服敏锐贼木桩肌肉记忆练习器 - 排名</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffd700;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .section {
+            background-color: #2a2a2a;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            color: #ffd700;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .ranking-table th, .ranking-table td {
+            padding: 10px 15px;
+            text-align: center;
+            border: 1px solid #444;
+        }
+
+        .ranking-table th {
+            color: #ffd700;
+            font-weight: bold;
+            background-color: #3a3a3a;
+        }
+
+        .ranking-table tr:nth-child(even) {
+            background-color: #2d2d2d;
+        }
+
+        .ranking-table tr:hover {
+            background-color: #3a3a3a;
+        }
+
+        .ranking-table tr:first-child {
+            background-color: rgba(255, 215, 0, 0.2);
+        }
+
+        .ranking-table tr:nth-child(2) {
+            background-color: rgba(192, 192, 192, 0.2);
+        }
+
+        .ranking-table tr:nth-child(3) {
+            background-color: rgba(205, 127, 50, 0.2);
+        }
+
+        .back-btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px 30px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background-color: #45a049;
+        }
+
+        .no-records {
+            text-align: center;
+            padding: 40px;
+            color: #aaa;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>时光服敏锐贼木桩肌肉记忆练习器 - 排名</h1>
+        
+        <div class="section">
+            <div class="section-title">DPS排名</div>
+            <table class="ranking-table" id="ranking-table">
+                <thead>
+                    <tr>
+                        <th>排名</th>
+                        <th>玩家ID</th>
+                        <th>战斗时长</th>
+                        <th>总伤害</th>
+                        <th>DPS</th>
+                        <th>日期</th>
+                    </tr>
+                </thead>
+                <tbody id="ranking-body">
+                    <!-- 动态生成 -->
+                </tbody>
+            </table>
+        </div>
+        
+        <a href="index.html" class="back-btn">返回游戏</a>
+    </div>
+
+    <script>
+        // 加载排名数据
+        function loadRanking() {
+            const records = JSON.parse(localStorage.getItem('gameRecords') || '[]');
+            const rankingBody = document.getElementById('ranking-body');
+            
+            if (records.length === 0) {
+                rankingBody.innerHTML = '<tr><td colspan="6" class="no-records">暂无记录</td></tr>';
+                return;
+            }
+            
+            rankingBody.innerHTML = '';
+            
+            records.forEach((record, index) => {
+                const row = document.createElement('tr');
+                const date = new Date(record.timestamp).toLocaleString('zh-CN');
+                
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${record.playerId}</td>
+                    <td>${record.battleTime}s</td>
+                    <td>${record.totalDamage.toLocaleString()}</td>
+                    <td>${record.dps}</td>
+                    <td>${date}</td>
+                `;
+                
+                rankingBody.appendChild(row);
+            });
+        }
+        
+        // 页面加载时加载排名
+        window.addEventListener('DOMContentLoaded', loadRanking);
+    </script>
+</body>
+</html>

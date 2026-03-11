@@ -200,7 +200,7 @@
             flex-wrap: wrap;
         }
 
-        .buff, .debuff {
+        .buffs-debuffs .buff, .buffs-debuffs .debuff {
             padding: 5px;
             border-radius: 4px;
             font-size: 12px;
@@ -216,17 +216,17 @@
             opacity: 0.8;
         }
 
-        .buff {
+        .buffs-debuffs .buff {
             background-color: rgba(0, 128, 0, 0.3);
             border: 1px solid #4caf50;
         }
 
-        .debuff {
+        .buffs-debuffs .debuff {
             background-color: rgba(128, 0, 0, 0.3);
             border: 1px solid #ff4444;
         }
 
-        .buff-duration, .debuff-duration {
+        .buffs-debuffs .buff-duration, .buffs-debuffs .debuff-duration {
             position: absolute;
             top: -8px;
             right: -8px;
@@ -297,7 +297,7 @@
         /* 技能栏 */
         .skill-bar {
             display: grid;
-            grid-template-columns: repeat(13, 1fr);
+            grid-template-columns: repeat(15, 1fr);
             gap: 0;
         }
 
@@ -326,6 +326,25 @@
         .skill-button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+        }
+
+        .skill-button.pressed {
+            animation: skillFlash 0.3s ease-out;
+        }
+
+        @keyframes skillFlash {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 20px 5px rgba(255, 215, 0, 0.9);
+                transform: scale(0.95);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
+                transform: scale(1);
+            }
         }
 
         .skill-icon {
@@ -373,8 +392,10 @@
             border: 1px solid #333;
             border-radius: 8px;
             padding: 10px;
+            overflow-x: auto;
             overflow-y: auto;
             font-size: 12px;
+            white-space: nowrap;
         }
 
         .log-entry {
@@ -640,6 +661,10 @@
                             <div class="skill-damage-value" id="stat-garrote">0</div>
                             <div class="skill-damage-name">锁喉</div>
                         </div>
+                        <div class="skill-damage-item">
+                            <div class="skill-damage-value" id="stat-ambush">0</div>
+                            <div class="skill-damage-name">伏击</div>
+                        </div>
                     </div>
                 </div>
 
@@ -723,6 +748,14 @@
                             <div class="skill-name" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-size: 10px;">转嫁</div>
                             <div style="position: absolute; top: 5px; right: 5px; font-size: 12px; font-weight: bold; color: #ffd700;"></div>
                         </div>
+                        <div class="skill-button" data-skill="ambush" id="skill-v" style="background-image: url('logo/fuji.png'); background-size: 80%; background-position: center; background-repeat: no-repeat; background-color: #3a3a3a;">
+                            <div class="skill-key" style="font-size: 16px; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">V</div>
+                            <div class="skill-name" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-size: 10px;">伏击</div>
+                        </div>
+                        <div class="skill-button" data-skill="premeditation" id="skill-b" style="background-image: url('logo/premeditation.png'); background-size: 80%; background-position: center; background-repeat: no-repeat; background-color: #3a3a3a;">
+                            <div class="skill-key" style="font-size: 16px; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">B</div>
+                            <div class="skill-name" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-size: 10px;">预谋</div>
+                        </div>
                     </div>
                 </div>
 
@@ -782,6 +815,26 @@
                             <span>转嫁：</span>
                             <input type="text" id="key-transfer-combo" value="C" style="padding: 5px; background-color: #3a3a3a; color: #e0e0e0; border: 1px solid #555; border-radius: 4px; width: 80px;" data-skill="transfer-combo">
                         </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span>伏击：</span>
+                            <input type="text" id="key-ambush" value="V" style="padding: 5px; background-color: #3a3a3a; color: #e0e0e0; border: 1px solid #555; border-radius: 4px; width: 80px;" data-skill="ambush">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span>预谋：</span>
+                            <input type="text" id="key-premeditation" value="B" style="padding: 5px; background-color: #3a3a3a; color: #e0e0e0; border: 1px solid #555; border-radius: 4px; width: 80px;" data-skill="premeditation">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span>组合技能1（暗步+预谋+伏击）：</span>
+                            <input type="text" id="key-combo1" value="" style="padding: 5px; background-color: #3a3a3a; color: #e0e0e0; border: 1px solid #555; border-radius: 4px; width: 80px;" data-skill="combo1">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span>组合技能2（暗步+预谋+锁喉）：</span>
+                            <input type="text" id="key-combo2" value="" style="padding: 5px; background-color: #3a3a3a; color: #e0e0e0; border: 1px solid #555; border-radius: 4px; width: 80px;" data-skill="combo2">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span>组合技能3（暗步+刺骨）：</span>
+                            <input type="text" id="key-combo3" value="" style="padding: 5px; background-color: #3a3a3a; color: #e0e0e0; border: 1px solid #555; border-radius: 4px; width: 80px;" data-skill="combo3">
+                        </div>
                     </div>
                     <div style="text-align: center; margin-top: 15px;">
                         <button id="save-keys" style="padding: 10px 30px; background-color: #4caf50; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; transition: background-color 0.3s;">保存按键设置</button>
@@ -827,7 +880,10 @@
                     <span class="stat-value" id="final-dps">0</span>
                 </div>
             </div>
-            <button class="restart-btn" id="restart-btn">重新开始</button>
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                <button class="restart-btn" id="restart-btn">重新开始</button>
+                <button class="restart-btn" onclick="viewRanking()" style="background-color: #2196f3;">查看排名</button>
+            </div>
         </div>
     </div>
 
@@ -856,7 +912,8 @@
         let deadlyPoisonStacks = 0; // 致命毒药层数
         let cachedComboPoints = 0; // 转嫁技能缓存的连击点数
         let currentTarget = 'boss'; // 当前目标
-        let keyBindings = {}; // 自定义按键映射
+        let keyBindings = []; // 自定义按键映射，数组形式 [{key: '1', skill: 'hemorrhage'}, ...]
+        let totalDeathMarkDamage = 0; // 死亡印记累计伤害
         // 饰品相关
         let饰品效果 = {
             伟大效果: false,
@@ -881,6 +938,14 @@
                 dotDuration: 15,
                 dotDamage: 500,
                 dotTick: 2
+            },
+            ambush: {
+                name: '伏击',
+                energy: 40,
+                requiresStealth: true,
+                comboPoints: 2,
+                weaponDamageMultiplier: 3.3,
+                additionalDamage: 1089
             },
             garrote: {
                 name: '锁喉',
@@ -970,6 +1035,13 @@
                 cooldown: 10,
                 range: 40,
                 noGlobalCD: true
+            },
+            premeditation: {
+                name: '预谋',
+                energy: 0,
+                cooldown: 15,
+                comboPoints: 2,
+                requiresStealth: true
             }
         };
 
@@ -1050,7 +1122,8 @@
                 if (e.ctrlKey) key = 'ctrl+' + key;
                 if (e.altKey) key = 'alt+' + key;
                 
-                const skillId = keyBindings[key];
+                // 根据当前状态获取合适的技能
+                const skillId = getSkillByKey(key);
                 if (skillId) {
                     castSkill(skillId);
                 }
@@ -1074,12 +1147,14 @@
                     
                     key = key.toLowerCase();
                     
-                    // 处理组合键
-                    if (e.shiftKey) key = 'Shift+' + key;
-                    if (e.ctrlKey) key = 'Ctrl+' + key;
-                    if (e.altKey) key = 'Alt+' + key;
+                    // 处理组合键（使用小写以保持一致）
+                    let keyParts = [];
+                    if (e.ctrlKey) keyParts.push('ctrl');
+                    if (e.shiftKey) keyParts.push('shift');
+                    if (e.altKey) keyParts.push('alt');
+                    keyParts.push(key);
                     
-                    this.value = key;
+                    this.value = keyParts.join('+');
                 });
             });
 
@@ -1108,39 +1183,78 @@
 
         // 加载按键绑定
         function loadKeyBindings() {
-            const savedBindings = localStorage.getItem('skillKeyBindings');
-            if (savedBindings) {
-                keyBindings = JSON.parse(savedBindings);
+            try {
+                const savedBindings = localStorage.getItem('skillKeyBindings');
+                if (savedBindings) {
+                    const parsedBindings = JSON.parse(savedBindings);
+                    // 检查是否是旧格式（对象），如果是则转换为新格式（数组）
+                    if (!Array.isArray(parsedBindings)) {
+                        // 旧格式，转换为新格式
+                        keyBindings = [];
+                        Object.keys(parsedBindings).forEach(key => {
+                            keyBindings.push({ key: key.toLowerCase(), skill: parsedBindings[key] });
+                        });
+                    } else {
+                        // 已经是新格式，确保所有键都是小写
+                        keyBindings = parsedBindings.map(binding => ({
+                            key: binding.key.toLowerCase(),
+                            skill: binding.skill
+                        }));
+                    }
+                } else {
+                    // 默认按键绑定
+                    keyBindings = [
+                        { key: '1', skill: 'hemorrhage' },
+                        { key: '2', skill: 'garrote' },
+                        { key: '3', skill: 'eviscerate' },
+                        { key: '4', skill: 'death-mark' },
+                        { key: '5', skill: 'thistle-tea' },
+                        { key: 'q', skill: 'shadow-dance' },
+                        { key: 'e', skill: 'shadowstep' },
+                        { key: 't', skill: 'rupture' },
+                        { key: 'f', skill: 'slice-dice' },
+                        { key: 'r', skill: 'vanish' },
+                        { key: 'z', skill: 'preparation' },
+                        { key: 'x', skill: 'misdirection' },
+                        { key: 'c', skill: 'transfer-combo' },
+                        { key: 'v', skill: 'ambush' },
+                        { key: 'b', skill: 'premeditation' }
+                    ];
+                }
                 // 更新输入框值和技能按钮显示
                 updateKeyDisplay();
-            } else {
-                // 默认按键绑定
-                keyBindings = {
-                    '1': 'hemorrhage',
-                    '2': 'garrote',
-                    '3': 'eviscerate',
-                    '4': 'death-mark',
-                    '5': 'thistle-tea',
-                    'q': 'shadow-dance',
-                    'e': 'shadowstep',
-                    't': 'rupture',
-                    'f': 'slice-dice',
-                    'r': 'vanish',
-                    'z': 'preparation',
-                    'x': 'misdirection',
-                    'c': 'transfer-combo'
-                };
+            } catch (error) {
+                console.error('加载按键绑定时出错:', error);
+                // 如果出错，使用默认按键绑定
+                keyBindings = [
+                    { key: '1', skill: 'hemorrhage' },
+                    { key: '2', skill: 'garrote' },
+                    { key: '3', skill: 'eviscerate' },
+                    { key: '4', skill: 'death-mark' },
+                    { key: '5', skill: 'thistle-tea' },
+                    { key: 'q', skill: 'shadow-dance' },
+                    { key: 'e', skill: 'shadowstep' },
+                    { key: 't', skill: 'rupture' },
+                    { key: 'f', skill: 'slice-dice' },
+                    { key: 'r', skill: 'vanish' },
+                    { key: 'z', skill: 'preparation' },
+                    { key: 'x', skill: 'misdirection' },
+                    { key: 'c', skill: 'transfer-combo' },
+                    { key: 'v', skill: 'ambush' },
+                    { key: 'b', skill: 'premeditation' }
+                ];
                 updateKeyDisplay();
             }
         }
 
         // 保存按键绑定
         function saveKeyBindings() {
-            const newBindings = {};
+            const newBindings = [];
             const skillIds = [
                 'hemorrhage', 'garrote', 'eviscerate', 'death-mark',
                 'thistle-tea', 'shadow-dance', 'shadowstep', 'rupture',
-                'slice-dice', 'vanish', 'preparation', 'misdirection', 'transfer-combo'
+                'slice-dice', 'vanish', 'preparation', 'misdirection', 'transfer-combo', 'ambush',
+                'premeditation', 'combo1', 'combo2', 'combo3'
             ];
 
             skillIds.forEach(skillId => {
@@ -1148,7 +1262,7 @@
                 if (inputElement) {
                     const key = inputElement.value.toLowerCase();
                     if (key) {
-                        newBindings[key] = skillId;
+                        newBindings.push({ key: key, skill: skillId });
                     }
                 }
             });
@@ -1161,51 +1275,145 @@
 
         // 更新按键显示
         function updateKeyDisplay() {
-            // 更新输入框值
-            Object.keys(keyBindings).forEach(key => {
-                const skillId = keyBindings[key];
-                const inputElement = document.getElementById(`key-${skillId}`);
-                if (inputElement) {
-                    inputElement.value = key;
-                }
-            });
+            try {
+                // 先重置所有输入框
+                const skillIds = [
+                    'hemorrhage', 'garrote', 'eviscerate', 'death-mark',
+                    'thistle-tea', 'shadow-dance', 'shadowstep', 'rupture',
+                    'slice-dice', 'vanish', 'preparation', 'misdirection', 'transfer-combo', 'ambush',
+                    'premeditation', 'combo1', 'combo2', 'combo3'
+                ];
+                
+                skillIds.forEach(skillId => {
+                    const inputElement = document.getElementById(`key-${skillId}`);
+                    if (inputElement) {
+                        inputElement.value = '';
+                    }
+                });
 
-            // 更新技能按钮上的按键标识
-            Object.keys(keyBindings).forEach(key => {
-                const skillId = keyBindings[key];
-                const skillButton = document.querySelector(`.skill-button[data-skill="${skillId}"]`);
-                if (skillButton) {
-                    const keyElement = skillButton.querySelector('.skill-key');
-                    if (keyElement) {
-                        // 简化组合键显示
-                        let displayKey = key;
-                        displayKey = displayKey.replace('shift+', 'S');
-                        displayKey = displayKey.replace('ctrl+', 'C');
-                        displayKey = displayKey.replace('alt+', 'A');
-                        keyElement.textContent = displayKey.toUpperCase();
+                // 然后更新输入框值
+                if (keyBindings && Array.isArray(keyBindings)) {
+                    keyBindings.forEach(binding => {
+                        if (binding && binding.skill) {
+                            const inputElement = document.getElementById(`key-${binding.skill}`);
+                            if (inputElement) {
+                                inputElement.value = binding.key || '';
+                            }
+                        }
+                    });
+
+                    // 更新技能按钮上的按键标识
+                    keyBindings.forEach(binding => {
+                        if (binding && binding.skill) {
+                            const skillButton = document.querySelector(`.skill-button[data-skill="${binding.skill}"]`);
+                            if (skillButton) {
+                                const keyElement = skillButton.querySelector('.skill-key');
+                                if (keyElement && binding.key) {
+                                    // 简化组合键显示
+                                    let displayKey = binding.key;
+                                    displayKey = displayKey.replace('shift+', 'S');
+                                    displayKey = displayKey.replace('ctrl+', 'C');
+                                    displayKey = displayKey.replace('alt+', 'A');
+                                    keyElement.textContent = displayKey.toUpperCase();
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('更新按键显示时出错:', error);
+            }
+        }
+
+        // 根据当前状态获取合适的技能
+        function getSkillByKey(key) {
+            try {
+                // 确保key是小写的
+                const searchKey = key.toLowerCase();
+                
+                // 收集所有绑定到该按键的技能
+                const matchedSkills = [];
+                if (keyBindings && Array.isArray(keyBindings)) {
+                    keyBindings.forEach(binding => {
+                        if (binding && binding.key && binding.key.toLowerCase() === searchKey) {
+                            matchedSkills.push(binding.skill);
+                        }
+                    });
+                }
+                
+                if (isStealthed) {
+                    // 潜行状态（暗影之舞）：优先组合技能，然后潜行技能，最后常规技能
+                    // 这样如果出血、伏击、组合技能1是同一个按键，在潜行状态下会优先使用组合技能1
+                    
+                    // 首先选择组合技能
+                    const comboSkills = ['combo1', 'combo2', 'combo3'];
+                    for (const skill of matchedSkills) {
+                        if (comboSkills.includes(skill)) {
+                            return skill;
+                        }
+                    }
+                    
+                    // 然后选择潜行技能
+                    const stealthSkills = ['garrote', 'ambush', 'premeditation'];
+                    for (const skill of matchedSkills) {
+                        if (stealthSkills.includes(skill)) {
+                            return skill;
+                        }
+                    }
+                    
+                    // 最后选择常规技能
+                    const regularSkills = ['hemorrhage', 'eviscerate', 'death-mark', 'thistle-tea', 'shadow-dance', 'shadowstep', 'rupture', 'slice-dice', 'vanish', 'preparation', 'misdirection', 'transfer-combo'];
+                    for (const skill of matchedSkills) {
+                        if (regularSkills.includes(skill)) {
+                            return skill;
+                        }
+                    }
+                } else {
+                    // 非潜行状态：优先常规技能，然后组合技能
+                    
+                    // 首先检查常规技能
+                    const regularSkills = ['hemorrhage', 'eviscerate', 'death-mark', 'thistle-tea', 'shadow-dance', 'shadowstep', 'rupture', 'slice-dice', 'vanish', 'preparation', 'misdirection', 'transfer-combo'];
+                    for (const skill of matchedSkills) {
+                        if (regularSkills.includes(skill)) {
+                            return skill;
+                        }
+                    }
+                    
+                    // 然后选择组合技能
+                    const comboSkills = ['combo1', 'combo2', 'combo3'];
+                    for (const skill of matchedSkills) {
+                        if (comboSkills.includes(skill)) {
+                            return skill;
+                        }
                     }
                 }
-            });
+            } catch (error) {
+                console.error('获取技能时出错:', error);
+            }
+            
+            return null;
         }
 
         // 重置按键绑定
         function resetKeyBindings() {
             // 默认按键绑定
-            const defaultBindings = {
-                '1': 'hemorrhage',
-                '2': 'garrote',
-                '3': 'eviscerate',
-                '4': 'death-mark',
-                '5': 'thistle-tea',
-                'q': 'shadow-dance',
-                'e': 'shadowstep',
-                't': 'rupture',
-                'f': 'slice-dice',
-                'r': 'vanish',
-                'z': 'preparation',
-                'x': 'misdirection',
-                'c': 'transfer-combo'
-            };
+            const defaultBindings = [
+                { key: '1', skill: 'hemorrhage' },
+                { key: '2', skill: 'garrote' },
+                { key: '3', skill: 'eviscerate' },
+                { key: '4', skill: 'death-mark' },
+                { key: '5', skill: 'thistle-tea' },
+                { key: 'q', skill: 'shadow-dance' },
+                { key: 'e', skill: 'shadowstep' },
+                { key: 't', skill: 'rupture' },
+                { key: 'f', skill: 'slice-dice' },
+                { key: 'r', skill: 'vanish' },
+                { key: 'z', skill: 'preparation' },
+                { key: 'x', skill: 'misdirection' },
+                { key: 'c', skill: 'transfer-combo' },
+                { key: 'v', skill: 'ambush' },
+                { key: 'b', skill: 'premeditation' }
+            ];
 
             keyBindings = defaultBindings;
             localStorage.setItem('skillKeyBindings', JSON.stringify(keyBindings));
@@ -1226,6 +1434,7 @@
 
             // 开始战斗
             isInCombat = true;
+            isStealthed = true; // 进入潜行状态
             document.getElementById('start-btn').disabled = true;
             document.getElementById('battle-duration').disabled = true;
 
@@ -1286,6 +1495,7 @@
             comboPoints = 5; // 保持5颗满星
             isInCombat = false;
             deathMarkDamage = 0;
+            totalDeathMarkDamage = 0;
             isStealthed = false;
             attackSpeed = 1.65;
             freeFinisher = false;
@@ -1351,7 +1561,8 @@
                 'auto-attack': { damage: 0, count: 0, crits: 0 },
                 'deadly-poison': { damage: 0, count: 0, crits: 0 },
                 'instant-poison': { damage: 0, count: 0, crits: 0 },
-                'transfer-combo': { damage: 0, count: 0, crits: 0 }
+                'transfer-combo': { damage: 0, count: 0, crits: 0 },
+                'ambush': { damage: 0, count: 0, crits: 0 }
             };
         }
 
@@ -1386,9 +1597,49 @@
             updateUI();
         }
 
+        // 释放组合技能（类似魔兽世界宏）
+        function castComboSkill(skillSequence) {
+            if (!isInCombat) return;
+            
+            // 创建一个标志位，防止组合技能内部调用组合技能导致无限递归
+            const isComboSkillCall = window._isComboSkillCall;
+            window._isComboSkillCall = true;
+            
+            let delay = 0;
+            skillSequence.forEach((skillId, index) => {
+                setTimeout(() => {
+                    // 直接调用castSkill，它会自己检查技能是否可以使用
+                    castSkill(skillId);
+                }, delay);
+                delay += 100; // 每个技能间隔100ms，确保有足够时间应用上一个技能的效果
+            });
+            
+            // 恢复标志位
+            setTimeout(() => {
+                window._isComboSkillCall = isComboSkillCall;
+            }, delay + 50);
+        }
+
         // 释放技能
         function castSkill(skillId) {
             if (!isInCombat) return;
+
+            // 处理组合技能（防止组合技能内部调用组合技能）
+            if (!window._isComboSkillCall) {
+                if (skillId === 'combo1') {
+                    // 组合技能1：暗影步 -> 预谋 -> 伏击
+                    castComboSkill(['shadowstep', 'premeditation', 'ambush']);
+                    return;
+                } else if (skillId === 'combo2') {
+                    // 组合技能2：暗影步 -> 预谋 -> 锁喉
+                    castComboSkill(['shadowstep', 'premeditation', 'garrote']);
+                    return;
+                } else if (skillId === 'combo3') {
+                    // 组合技能3：暗影步 -> 刺骨
+                    castComboSkill(['shadowstep', 'eviscerate']);
+                    return;
+                }
+            }
 
             const skill = skills[skillId];
             if (!skill) return;
@@ -1415,58 +1666,66 @@
 
             // 转嫁技能不占用公共CD，直接使用
 
+            // 触发技能按下的闪烁特效
+            const skillButton = document.querySelector(`.skill-button[data-skill="${skillId}"]`);
+            if (skillButton) {
+                skillButton.classList.remove('pressed');
+                void skillButton.offsetWidth; // 强制重绘，让动画可以重新播放
+                skillButton.classList.add('pressed');
+                // 0.3秒后移除类，以便下次可以再次触发
+                setTimeout(() => {
+                    skillButton.classList.remove('pressed');
+                }, 300);
+            }
+
             // 处理技能效果
             switch (skillId) {
                 case 'hemorrhage':
-                    // 检查是否在潜行状态
-                    if (isStealthed) {
-                        // 伏击逻辑
-                        if (energy < 40) return; // 检查能量
-                        energy -= 40;
-                        // 计算伏击伤害：330%武器伤害 + 1089
-                        const weaponDamage = (246 + 370) / 2; // 主手武器平均伤害
-                        const ambushDamage = Math.floor(weaponDamage * 3.3 + 1089);
-                        dealDamage(ambushDamage, '伏击');
-                        addComboPoints(2); // 奖励2个连击点
-                        // 如果有缓存的连击点，新产生的连击点会清除缓存
-                        if (cachedComboPoints > 0) {
-                            addCombatLog(`新产生的连击点清除了缓存的${cachedComboPoints}颗连击点`, 'debuff');
-                            cachedComboPoints = 0;
-                            // 清除技能上的数字
-                            const transferButton = document.getElementById('skill-c');
-                            const numberElement = transferButton.querySelector('div:last-child');
-                            if (numberElement) {
-                                numberElement.textContent = '';
-                            }
+                    // 出血逻辑
+                    addComboPoints(skill.comboPoints);
+                    // 如果有缓存的连击点，新产生的连击点会清除缓存
+                    if (cachedComboPoints > 0) {
+                        addCombatLog(`新产生的连击点清除了缓存的${cachedComboPoints}颗连击点`, 'debuff');
+                        cachedComboPoints = 0;
+                        // 清除技能上的数字
+                        const transferButton = document.getElementById('skill-c');
+                        const numberElement = transferButton.querySelector('div:last-child');
+                        if (numberElement) {
+                            numberElement.textContent = '';
                         }
-                        addCombatLog(`使用伏击，造成${ambushDamage}点伤害，获得2点连击点`, 'damage');
-                    } else {
-                        // 出血逻辑
-                        addComboPoints(skill.comboPoints);
-                        // 如果有缓存的连击点，新产生的连击点会清除缓存
-                        if (cachedComboPoints > 0) {
-                            addCombatLog(`新产生的连击点清除了缓存的${cachedComboPoints}颗连击点`, 'debuff');
-                            cachedComboPoints = 0;
-                            // 清除技能上的数字
-                            const transferButton = document.getElementById('skill-c');
-                            const numberElement = transferButton.querySelector('div:last-child');
-                            if (numberElement) {
-                                numberElement.textContent = '';
-                            }
-                        }
-                        // 添加出血DOT
-                        if (!activeDebuffs.hemorrhage) {
-                            activeDebuffs.hemorrhage = {
-                                name: skill.name,
-                                duration: skill.dotDuration,
-                                tick: skill.dotTick,
-                                damage: skill.dotDamage
-                            };
-                        } else {
-                            activeDebuffs.hemorrhage.duration = skill.dotDuration;
-                        }
-                        addCombatLog(`使用出血，获得${skill.comboPoints}点连击点`, 'buff');
                     }
+                    // 添加出血DOT
+                    if (!activeDebuffs.hemorrhage) {
+                        activeDebuffs.hemorrhage = {
+                            name: skill.name,
+                            duration: skill.dotDuration,
+                            tick: skill.dotTick,
+                            damage: skill.dotDamage
+                        };
+                    } else {
+                        activeDebuffs.hemorrhage.duration = skill.dotDuration;
+                    }
+                    addCombatLog(`使用出血，获得${skill.comboPoints}点连击点`, 'buff');
+                    break;
+                case 'ambush':
+                    // 伏击逻辑
+                    // 计算伏击伤害：330%武器伤害 + 1089
+                    const weaponDamage = (246 + 370) / 2; // 主手武器平均伤害
+                    const ambushDamage = Math.floor(weaponDamage * 3.3 + 1089);
+                    dealDamage(ambushDamage, 'ambush');
+                    addComboPoints(2); // 奖励2个连击点
+                    // 如果有缓存的连击点，新产生的连击点会清除缓存
+                    if (cachedComboPoints > 0) {
+                        addCombatLog(`新产生的连击点清除了缓存的${cachedComboPoints}颗连击点`, 'debuff');
+                        cachedComboPoints = 0;
+                        // 清除技能上的数字
+                        const transferButton = document.getElementById('skill-c');
+                        const numberElement = transferButton.querySelector('div:last-child');
+                        if (numberElement) {
+                            numberElement.textContent = '';
+                        }
+                    }
+                    addCombatLog(`使用伏击，造成${ambushDamage}点伤害，获得2点连击点`, 'damage');
                     break;
                 case 'garrote':
                     // 锁喉逻辑
@@ -1498,7 +1757,7 @@
                 case 'eviscerate':
                     // 刺骨逻辑
                     const eviscerateDamage = calculateFinisherDamage(skillId, comboPoints);
-                    dealDamage(eviscerateDamage, skill.name);
+                    dealDamage(eviscerateDamage, 'eviscerate');
                     addCombatLog(`使用刺骨，造成${eviscerateDamage}点伤害`, 'damage');
                     spendComboPoints();
                     break;
@@ -1506,6 +1765,8 @@
                     // 死亡印记逻辑
                     // 储存伤害
                     deathMarkDamage = 0;
+                    // 保存使用死亡印记时的连击点数
+                    const deathMarkComboPoints = comboPoints;
                     // 添加死亡印记到持续效果
                     activeBuffs['death-mark'] = {
                         name: '死亡印记',
@@ -1515,23 +1776,26 @@
                     setTimeout(() => {
                         // 释放储存的伤害
                         const markDamage = Math.floor(deathMarkDamage * 0.5);
+                        // 累计死亡印记伤害（包括记录的总伤害，不是只记录释放的伤害）
+                        totalDeathMarkDamage += deathMarkDamage;
                         if (markDamage > 0) {
                             dealDamage(markDamage, '死亡印记');
                             addCombatLog(`死亡印记释放，造成${markDamage}点伤害`, 'damage');
                         }
                         // 刷新割裂逻辑（爆炸时）
                         if (activeDebuffs.rupture) {
-                            let refreshChance = comboPoints === 5 ? 1 : (0.2 * comboPoints);
+                            // 使用保存的连击点数计算刷新几率
+                            let refreshChance = deathMarkComboPoints === 5 ? 1 : (0.2 * deathMarkComboPoints);
                             if (Math.random() < refreshChance) {
                                 // 完全重置割裂，就像重新释放了一个5星割裂
                                 activeDebuffs.rupture = {
                                     name: '割裂',
-                                    duration: 16, // 5星割裂时长
+                                    duration: 17, // 17秒割裂时长
                                     tick: skills.rupture.dotTick,
                                     totalDamage: skills.rupture.dotTotalDamage[4], // 5星伤害
-                                    ticks: Math.floor(16 / skills.rupture.dotTick)
+                                    ticks: Math.floor(17 / skills.rupture.dotTick)
                                 };
-                                addCombatLog(`死亡印记爆炸刷新了割裂，持续时间重置为16秒`, 'buff');
+                                addCombatLog(`死亡印记爆炸刷新了割裂，持续时间重置为17秒`, 'buff');
                             }
                         }
                         // 移除死亡印记效果
@@ -1665,6 +1929,22 @@
                             skillCooldowns['transfer-combo'] = skills['transfer-combo'].cooldown;
                         }
                     }
+                    break;
+                case 'premeditation':
+                    // 预谋技能逻辑
+                    addComboPoints(skill.comboPoints);
+                    // 如果有缓存的连击点，新产生的连击点会清除缓存
+                    if (cachedComboPoints > 0) {
+                        addCombatLog(`新产生的连击点清除了缓存的${cachedComboPoints}颗连击点`, 'debuff');
+                        cachedComboPoints = 0;
+                        // 清除技能上的数字
+                        const transferButton = document.getElementById('skill-c');
+                        const numberElement = transferButton.querySelector('div:last-child');
+                        if (numberElement) {
+                            numberElement.textContent = '';
+                        }
+                    }
+                    addCombatLog(`使用预谋，获得${skill.comboPoints}点连击点`, 'buff');
                     break;
             }
 
@@ -1942,7 +2222,7 @@
                 endBattle();
             }
 
-            // 实时更新UI，确保死亡印记伤害加层实时显示
+            // 实时更新UI
             updateUI();
         }
 
@@ -1960,15 +2240,53 @@
             // 获取玩家ID
             const playerId = document.getElementById('player-id').value || '未知';
             
+            // 计算DPS
+            const dps = battleTime > 0 ? Math.floor(totalDamage / battleTime) : 0;
+            
             // 更新战斗结束弹窗
             document.getElementById('final-player-id').textContent = playerId;
             document.getElementById('final-combat-time').textContent = battleTime + 's';
             document.getElementById('final-total-damage').textContent = totalDamage.toLocaleString();
-            const dps = battleTime > 0 ? Math.floor(totalDamage / battleTime) : 0;
             document.getElementById('final-dps').textContent = dps;
+            
+            // 保存游戏记录
+            saveGameRecord(playerId, battleTime, totalDamage, dps);
             
             // 显示战斗结束弹窗
             document.getElementById('battle-end-modal').style.display = 'flex';
+        }
+
+        // 保存游戏记录
+        function saveGameRecord(playerId, battleTime, totalDamage, dps) {
+            // 从localStorage获取现有记录
+            const records = JSON.parse(localStorage.getItem('gameRecords') || '[]');
+            
+            // 创建新记录
+            const newRecord = {
+                playerId: playerId,
+                battleTime: battleTime,
+                totalDamage: totalDamage,
+                dps: dps,
+                timestamp: new Date().toISOString()
+            };
+            
+            // 添加新记录
+            records.push(newRecord);
+            
+            // 按DPS降序排序
+            records.sort((a, b) => b.dps - a.dps);
+            
+            // 只保留前100条记录
+            const topRecords = records.slice(0, 100);
+            
+            // 保存回localStorage
+            localStorage.setItem('gameRecords', JSON.stringify(topRecords));
+        }
+
+        // 查看排名
+        function viewRanking() {
+            // 跳转到排名页面
+            window.location.href = 'ranking.html';
         }
 
         // 添加战斗日志
@@ -2067,7 +2385,11 @@
                 '暗月卡片:伟大': 'logo/weida.png',
                 '海啸护符': 'logo/haixiao.png',
                 '致命药膏': 'logo/zhiming.png',
-                '伏击': 'logo/fuji.png'
+                'deadly-poison': 'logo/zhiming.png',
+                '伏击': 'logo/fuji.png',
+                'razorheart': 'logo/tixinzhe.png',
+                'master-assassin': 'logo/dashi.png',
+                '敏锐大师': 'logo/dashi.png'
             };
 
             // 添加buffs
@@ -2084,6 +2406,22 @@
                     durationElement.className = 'buff-duration';
                     durationElement.textContent = buff.duration;
                     buffElement.appendChild(durationElement);
+                }
+                // 为死亡印记添加实时伤害数值显示
+                if (buffId === 'death-mark') {
+                    const damageElement = document.createElement('div');
+                    damageElement.style.position = 'absolute';
+                    damageElement.style.bottom = '-5px';
+                    damageElement.style.left = '50%';
+                    damageElement.style.transform = 'translateX(-50%)';
+                    damageElement.style.backgroundColor = '#333';
+                    damageElement.style.padding = '2px 4px';
+                    damageElement.style.borderRadius = '3px';
+                    damageElement.style.fontSize = '10px';
+                    damageElement.style.color = '#ffd700';
+                    damageElement.style.fontWeight = 'bold';
+                    damageElement.textContent = Math.floor(deathMarkDamage * 0.5);
+                    buffElement.appendChild(damageElement);
                 }
                 buffsDebuffsElement.appendChild(buffElement);
             });
@@ -2110,11 +2448,12 @@
             document.getElementById('stat-auto-attack').textContent = damageStats['auto-attack'].damage;
             document.getElementById('stat-instant-poison').textContent = damageStats['instant-poison'].damage;
             document.getElementById('stat-deadly-poison').textContent = damageStats['deadly-poison'].damage;
-            document.getElementById('stat-death-mark').textContent = damageStats['death-mark'].damage;
+            document.getElementById('stat-death-mark').textContent = totalDeathMarkDamage;
             document.getElementById('stat-rupture').textContent = damageStats['rupture'].damage;
             document.getElementById('stat-eviscerate').textContent = damageStats['eviscerate'].damage;
             document.getElementById('stat-hemorrhage').textContent = damageStats['hemorrhage'].damage;
             document.getElementById('stat-garrote').textContent = damageStats['garrote'].damage;
+            document.getElementById('stat-ambush').textContent = damageStats['ambush'].damage;
 
             // 更新伤害统计详情表格
             updateDamageStatsTable();
@@ -2136,7 +2475,8 @@
                 'rupture': '割裂',
                 'eviscerate': '刺骨',
                 'hemorrhage': '出血',
-                'garrote': '锁喉'
+                'garrote': '锁喉',
+                'ambush': '伏击'
             };
 
             // 计算总伤害
@@ -2145,7 +2485,14 @@
             // 生成表格行
             Object.keys(damageStats).forEach(damageType => {
                 const stats = damageStats[damageType];
-                if (stats.damage > 0) {
+                let displayDamage = stats.damage;
+                
+                // 对于死亡印记，使用累计伤害
+                if (damageType === 'death-mark' && totalDeathMarkDamage > 0) {
+                    displayDamage = totalDeathMarkDamage;
+                }
+                
+                if (displayDamage > 0) {
                     const row = document.createElement('tr');
                     
                     // 伤害类型
@@ -2155,13 +2502,13 @@
 
                     // 占比
                     const percentageCell = document.createElement('td');
-                    const percentage = totalDmg > 0 ? (stats.damage / totalDmg * 100).toFixed(1) + '%' : '0%';
+                    const percentage = totalDmg > 0 ? (displayDamage / totalDmg * 100).toFixed(1) + '%' : '0%';
                     percentageCell.textContent = percentage;
                     row.appendChild(percentageCell);
 
                     // 总伤害
                     const damageCell = document.createElement('td');
-                    damageCell.textContent = stats.damage.toLocaleString();
+                    damageCell.textContent = displayDamage.toLocaleString();
                     row.appendChild(damageCell);
 
                     // 次数
@@ -2171,7 +2518,7 @@
 
                     // 平均伤害
                     const avgCell = document.createElement('td');
-                    const avgDamage = stats.count > 0 ? Math.floor(stats.damage / stats.count) : 0;
+                    const avgDamage = stats.count > 0 ? Math.floor(displayDamage / stats.count) : 0;
                     avgCell.textContent = avgDamage.toLocaleString();
                     row.appendChild(avgCell);
 
@@ -2183,7 +2530,7 @@
 
                     // DPS
                     const dpsCell = document.createElement('td');
-                    const dps = battleTime > 0 ? Math.floor(stats.damage / battleTime) : 0;
+                    const dps = battleTime > 0 ? Math.floor(displayDamage / battleTime) : 0;
                     dpsCell.textContent = dps;
                     row.appendChild(dpsCell);
 
